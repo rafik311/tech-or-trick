@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECH OR TRICK? 📱 - Tech Safety for Older Adults</title>
+  <title>TECH OR TRICK? 📱 - Digital Safety Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -28,210 +28,232 @@
   </script>
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap');
+    
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       touch-action: manipulation;
     }
+    
     .btn-touch {
-      min-height: 4rem;
-      min-width: 4rem;
+      min-height: 3.8rem;
       touch-action: manipulation;
     }
+
+    .app-card {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.01);
+    }
+
+    /* Device Simulations */
     .phone-mockup {
-      border: 12px solid #1f2937;
-      border-radius: 36px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-      background-color: #f9fafb;
+      border: 12px solid #0f172a;
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+      background-color: #f8fafc;
       overflow: hidden;
     }
+
     .browser-mockup {
-      border: 4px solid #374151;
-      border-radius: 12px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      border: 2px solid #cbd5e1;
+      border-radius: 20px;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
       overflow: hidden;
       background-color: #ffffff;
     }
+
+    /* Highlighting for Danger Elements */
     @keyframes highlight-pulse {
-      0%, 100% { background-color: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.8); }
-      50% { background-color: rgba(239, 68, 68, 0.5); border-color: rgba(239, 68, 68, 1); }
+      0%, 100% { background-color: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+      50% { background-color: rgba(239, 68, 68, 0.35); border-color: #dc2626; }
     }
     .highlight-danger {
-      animation: highlight-pulse 2s infinite;
-      border: 3px dashed #ef4444;
+      animation: highlight-pulse 1.6s infinite;
+      border: 2px dashed #ef4444 !important;
       border-radius: 8px;
-      padding: 4px;
+      padding: 2px 6px;
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-  <!-- TOP APP BAR -->
-  <header class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center px-6">
-    <div class="flex items-center space-x-3">
-      <span class="text-3xl">📱</span>
-      <h1 class="text-2xl md:text-3xl font-extrabold tracking-wide">TECH OR TRICK?</h1>
-    </div>
-    <div id="room-badge" class="hidden bg-blue-800 text-yellow-300 font-bold px-4 py-2 rounded-full text-lg border border-yellow-400">
-      ROOM: <span id="display-room-code">----</span>
+  <!-- NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center">
+          <span class="text-2xl">🛡️</span>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-black tracking-tight text-slate-900">TECH OR TRICK?</h1>
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider hidden sm:block">Digital Safety Simulator</p>
+        </div>
+      </div>
+      <div id="room-badge" class="hidden bg-slate-100 text-slate-800 font-mono font-black px-4 py-2 rounded-xl text-base border border-slate-300 shadow-inner">
+        ROOM: <span id="display-room-code" class="text-indigo-600 tracking-widest">----</span>
+      </div>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-grow container mx-auto px-4 py-6 max-w-5xl flex flex-col justify-center">
+  <!-- MAIN WRAPPER -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 flex flex-col justify-center">
 
-    <!-- SCREEN 1: LANDING -->
-    <section id="screen-landing" class="space-y-8 text-center py-8">
-      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-200 space-y-6">
-        <h2 class="text-3xl md:text-5xl font-black text-blue-950">Technology Safety Game</h2>
-        <p class="text-xl md:text-2xl text-slate-700 max-w-2xl mx-auto leading-relaxed">
-          Interactive health-promotion game for seniors.
-        </p>
+    <!-- 1. LANDING -->
+    <section id="screen-landing" class="space-y-8 text-center py-4">
+      <div class="app-card p-8 md:p-12 rounded-3xl space-y-8">
+        <div class="max-w-2xl mx-auto space-y-3">
+          <span class="bg-indigo-50 text-indigo-700 text-xs font-black px-4 py-2 rounded-full border border-indigo-200 uppercase tracking-widest">Interactive Workshop</span>
+          <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">Spot the Threat. Stay Secure.</h2>
+          <p class="text-base md:text-lg text-slate-600 font-medium leading-relaxed">
+            Test your ability to spot real digital scams, fraudulent websites, and security alerts in a safe guided session.
+          </p>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
-          <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-300 flex flex-col justify-between items-center text-center space-y-4">
-            <div>
-              <span class="text-5xl">📢</span>
-              <h3 class="text-2xl font-bold text-blue-900 mt-2">Activity Leader</h3>
-              <p class="text-slate-600 mt-1">Project this on the classroom screen.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto pt-2">
+          <div class="bg-gradient-to-b from-indigo-50/50 to-white p-8 rounded-2xl border-2 border-indigo-100 flex flex-col justify-between items-center text-center space-y-6 hover:border-indigo-300 transition">
+            <div class="space-y-3">
+              <span class="text-6xl">📺</span>
+              <h3 class="text-2xl font-black text-slate-900">Host Screen</h3>
+              <p class="text-slate-600 text-sm font-medium">For presenters. Displays room QR code and main scenario screen.</p>
             </div>
-            <button onclick="initLeader()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
-              Create Game
+            <button onclick="initLeader()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition btn-touch">
+              Host Game Session 🚀
             </button>
           </div>
 
-          <div class="bg-green-50 p-6 rounded-2xl border-2 border-green-300 flex flex-col justify-between items-center text-center space-y-4">
-            <div>
-              <span class="text-5xl">🙋‍♀️</span>
-              <h3 class="text-2xl font-bold text-green-900 mt-2">Participant</h3>
-              <p class="text-slate-600 mt-1">Join from your phone to answer questions.</p>
+          <div class="bg-gradient-to-b from-emerald-50/50 to-white p-8 rounded-2xl border-2 border-emerald-100 flex flex-col justify-between items-center text-center space-y-6 hover:border-emerald-300 transition">
+            <div class="space-y-3">
+              <span class="text-6xl">📱</span>
+              <h3 class="text-2xl font-black text-slate-900">Player Device</h3>
+              <p class="text-slate-600 text-sm font-medium">Join from a smartphone or tablet to answer questions in real time.</p>
             </div>
-            <button onclick="initParticipantJoin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
-              Join Game
+            <button onclick="initParticipantJoin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition btn-touch">
+              Join Session ✨
             </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SCREEN 2: LEADER LOBBY -->
+    <!-- 2. LEADER LOBBY -->
     <section id="screen-leader-lobby" class="hidden space-y-6 text-center">
-      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-200 space-y-6">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-blue-900">Scan QR Code to Join!</h2>
+      <div class="app-card p-8 rounded-3xl space-y-6">
+        <h2 class="text-3xl font-black text-slate-900">Scan QR Code to Join!</h2>
         
-        <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-4">
-          <div class="bg-slate-50 p-6 rounded-2xl border-4 border-slate-300 flex flex-col items-center">
-            <div id="qrcode-container" class="bg-white p-4 rounded-xl border"></div>
-            <p class="mt-4 text-xl font-bold text-slate-700">Room Code: <span id="lobby-room-code" class="text-blue-600 text-2xl font-black">----</span></p>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-2">
+          <div class="bg-white p-6 rounded-2xl border-2 border-slate-200 shadow-md flex flex-col items-center">
+            <div id="qrcode-container" class="p-2"></div>
+            <p class="mt-4 text-slate-700 font-extrabold text-lg">Room Code: <span id="lobby-room-code" class="text-indigo-600 font-mono text-3xl font-black">----</span></p>
           </div>
 
-          <div class="w-full md:w-1/2 text-left bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 min-h-[260px] flex flex-col">
-            <h3 class="text-2xl font-bold text-slate-800 mb-4 flex justify-between items-center">
-              <span>Connected Players</span>
-              <span id="player-count" class="bg-blue-600 text-white px-3 py-1 rounded-full text-lg font-bold">0</span>
+          <div class="w-full md:w-1/2 text-left bg-slate-50 p-6 rounded-2xl border border-slate-200 min-h-[260px] flex flex-col">
+            <h3 class="text-lg font-black text-slate-800 mb-4 flex justify-between items-center">
+              <span>Connected Participants</span>
+              <span id="player-count" class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-black">0</span>
             </h3>
-            <div id="player-list" class="flex-grow flex flex-wrap content-start gap-3 overflow-y-auto max-h-48 p-2">
-              <span class="text-slate-400 italic text-lg">Waiting for participants to join...</span>
+            <div id="player-list" class="flex-grow flex flex-wrap content-start gap-2 overflow-y-auto max-h-48 p-1">
+              <span class="text-slate-400 italic text-sm">Waiting for players to scan or enter code...</span>
             </div>
           </div>
         </div>
 
-        <button onclick="startGame()" class="w-full md:w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-3xl py-6 rounded-2xl shadow-xl transition btn-touch">
-          Start Activity 🚀
+        <button onclick="startGame()" class="w-full md:w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xl py-4 rounded-xl shadow-md transition btn-touch">
+          Start Game Session 🚀
         </button>
       </div>
     </section>
 
-    <!-- SCREEN 3: PARTICIPANT JOIN -->
-    <section id="screen-participant-join" class="hidden max-w-md mx-auto space-y-6 text-center">
-      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-green-300 space-y-6">
-        <div class="text-6xl">👋</div>
-        <h2 class="text-3xl font-extrabold text-slate-900">Welcome!</h2>
-        <p class="text-xl text-slate-600">Please enter your name to begin.</p>
+    <!-- 3. PARTICIPANT JOIN -->
+    <section id="screen-participant-join" class="hidden max-w-md mx-auto space-y-6 text-center w-full">
+      <div class="app-card p-8 rounded-3xl space-y-6">
+        <div class="text-5xl">👋</div>
+        <h2 class="text-3xl font-black text-slate-900">Join Room</h2>
+        <p class="text-slate-600 text-sm font-medium">Enter your details to join the live session.</p>
 
-        <form onsubmit="event.preventDefault(); joinGame();" class="space-y-5">
+        <form onsubmit="event.preventDefault(); joinGame();" class="space-y-4">
           <div class="text-left">
-            <label class="block text-xl font-bold text-slate-800 mb-2">Room Code</label>
-            <input type="text" id="join-room-input" maxlength="4" placeholder="4-LETTER CODE" class="w-full p-4 text-2xl font-black tracking-widest text-center uppercase border-4 border-slate-300 rounded-2xl focus:border-blue-500 outline-none">
+            <label class="block text-xs font-extrabold text-slate-600 uppercase tracking-wider mb-1">Room Code</label>
+            <input type="text" id="join-room-input" maxlength="4" placeholder="4-LETTER CODE" class="w-full p-4 text-2xl font-mono font-black tracking-widest text-center uppercase bg-slate-50 text-indigo-600 border-2 border-slate-200 rounded-xl focus:border-indigo-600 outline-none">
           </div>
 
           <div class="text-left">
-            <label class="block text-xl font-bold text-slate-800 mb-2">Your Name</label>
-            <input type="text" id="join-name-input" maxlength="15" placeholder="e.g. Grandpa Rafik" class="w-full p-4 text-2xl font-bold text-center border-4 border-slate-300 rounded-2xl focus:border-blue-500 outline-none">
+            <label class="block text-xs font-extrabold text-slate-600 uppercase tracking-wider mb-1">Your Name</label>
+            <input type="text" id="join-name-input" maxlength="15" placeholder="Enter your name" class="w-full p-4 text-xl font-bold text-center bg-slate-50 text-slate-900 border-2 border-slate-200 rounded-xl focus:border-indigo-600 outline-none">
           </div>
 
-          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-black text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
-            Join Now ✨
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xl py-4 rounded-xl shadow-md transition btn-touch mt-2">
+            Enter Room ✨
           </button>
         </form>
       </div>
     </section>
 
-    <!-- SCREEN 4: PARTICIPANT WAITING -->
-    <section id="screen-participant-waiting" class="hidden text-center max-w-md mx-auto space-y-6">
-      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-300 space-y-6">
+    <!-- 4. PARTICIPANT WAITING -->
+    <section id="screen-participant-waiting" class="hidden text-center max-w-md mx-auto space-y-6 w-full">
+      <div class="app-card p-8 rounded-3xl space-y-6">
         <div class="animate-bounce text-6xl">⏳</div>
-        <h2 class="text-3xl font-extrabold text-blue-900">You are in!</h2>
-        <p class="text-2xl text-slate-700">Hello, <span id="waiting-player-name" class="font-bold text-blue-600">---</span></p>
-        <div class="p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
-          <p class="text-xl text-slate-800 font-semibold">Please look at the main screen. The activity leader will start shortly!</p>
+        <h2 class="text-3xl font-black text-slate-900">Ready to Play!</h2>
+        <p class="text-lg text-slate-600 font-medium">Player: <span id="waiting-player-name" class="font-bold text-indigo-600">---</span></p>
+        <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+          <p class="text-sm text-indigo-900 font-semibold">Look at the host screen. The session will start shortly!</p>
         </div>
       </div>
     </section>
 
-    <!-- SCREEN 5: GAMEPLAY CONTAINER -->
+    <!-- 5. GAMEPLAY -->
     <section id="screen-gameplay" class="hidden space-y-6">
-      <div class="bg-white p-4 rounded-2xl shadow border-2 border-slate-200 flex justify-between items-center">
+      <div class="app-card p-4 rounded-2xl flex justify-between items-center">
         <div>
-          <span class="text-lg font-bold text-slate-500 uppercase tracking-wider block">Scenario</span>
-          <span id="scenario-progress-text" class="text-2xl font-black text-blue-950">1 of 6</span>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Scenario</span>
+          <span id="scenario-progress-text" class="text-2xl font-black text-slate-900">1 of 6</span>
         </div>
-        <div class="w-1/3 bg-slate-200 h-6 rounded-full overflow-hidden border border-slate-300">
-          <div id="progress-bar-fill" class="bg-blue-600 h-full transition-all duration-500" style="width: 16.6%;"></div>
+        <div class="w-1/3 bg-slate-100 h-3.5 rounded-full overflow-hidden border border-slate-200">
+          <div id="progress-bar-fill" class="bg-indigo-600 h-full transition-all duration-500" style="width: 16.6%;"></div>
         </div>
         <div id="leader-answer-counter" class="hidden text-right">
-          <span class="text-sm font-bold text-slate-500 uppercase block">Responses</span>
-          <span id="answers-received-count" class="text-2xl font-black text-green-600">0 / 0</span>
+          <span class="text-xs font-bold text-slate-400 uppercase block">Responses</span>
+          <span id="answers-received-count" class="text-2xl font-black text-emerald-600">0 / 0</span>
         </div>
         <div id="participant-streak-badge" class="hidden text-right">
-          <span class="text-sm font-bold text-slate-500 uppercase block">Streak</span>
-          <span id="player-streak-text" class="text-2xl font-black text-orange-500">🔥 0</span>
+          <span class="text-xs font-bold text-slate-400 uppercase block">Streak</span>
+          <span id="player-streak-text" class="text-2xl font-black text-amber-500">🔥 0</span>
         </div>
       </div>
 
-      <div class="bg-white p-4 md:p-8 rounded-3xl shadow-xl border-2 border-slate-300 min-h-[420px] flex flex-col justify-center items-center">
+      <div class="app-card p-4 md:p-8 rounded-3xl min-h-[420px] flex flex-col justify-center items-center">
         <div id="scenario-stage" class="w-full max-w-2xl mx-auto"></div>
       </div>
 
-      <div id="leader-control-panel" class="hidden bg-slate-800 text-white p-4 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-xl font-bold">Leader Controls:</div>
+      <div id="leader-control-panel" class="hidden bg-slate-900 text-white p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
+        <div class="text-base font-bold text-slate-300">Host Controls:</div>
         <div class="flex gap-4 w-full md:w-auto">
-          <button id="btn-reveal-answer" onclick="revealAnswer()" class="flex-1 md:flex-none bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-black text-xl px-8 py-4 rounded-xl shadow transition btn-touch">
+          <button id="btn-reveal-answer" onclick="revealAnswer()" class="flex-1 md:flex-none bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg px-8 py-3 rounded-xl transition btn-touch">
             Reveal Answer 🔍
           </button>
-          <button id="btn-next-scenario" onclick="nextScenario()" class="hidden flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-8 py-4 rounded-xl shadow transition btn-touch">
+          <button id="btn-next-scenario" onclick="nextScenario()" class="hidden flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg px-8 py-3 rounded-xl transition btn-touch">
             Next Scenario ➡️
           </button>
         </div>
       </div>
 
       <div id="participant-control-panel" class="hidden space-y-4">
-        <p id="participant-prompt-text" class="text-2xl font-black text-center text-slate-800">WHAT WOULD YOU DO?</p>
+        <p id="participant-prompt-text" class="text-xl md:text-2xl font-black text-center text-slate-900 tracking-wide">WHAT WOULD YOU DO?</p>
         <div id="participant-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
-      <!-- EXPLANATION & LIVE SCOREBOARD -->
+      <!-- EXPLANATION & STANDINGS -->
       <div id="explanation-card" class="hidden space-y-6">
-        <div class="bg-amber-50 p-6 md:p-8 rounded-3xl border-4 border-amber-400 space-y-4 shadow-xl">
+        <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-indigo-200 shadow-lg space-y-4">
           <div class="flex items-center space-y-2 md:space-y-0 md:space-x-4 flex-col md:flex-row text-center md:text-left">
-            <span id="explanation-badge" class="text-4xl px-4 py-2 rounded-2xl font-black text-white bg-red-600">🔴 DANGER</span>
-            <h3 id="explanation-title" class="text-2xl md:text-3xl font-extrabold text-slate-900">Scam Warning Key Points</h3>
+            <span id="explanation-badge" class="text-lg px-4 py-1.5 rounded-xl font-black text-white bg-red-600 shadow">🔴 DANGER</span>
+            <h3 id="explanation-title" class="text-2xl font-black text-slate-900">Scam Warning Key Points</h3>
           </div>
-          <p id="explanation-text" class="text-xl md:text-2xl text-slate-800 font-semibold leading-relaxed"></p>
+          <p id="explanation-text" class="text-base md:text-lg text-slate-700 font-medium leading-relaxed"></p>
         </div>
 
-        <!-- LIVE SCOREBOARD AFTER ANSWER -->
-        <div class="bg-slate-900 text-white p-6 rounded-3xl border-4 border-blue-500 shadow-xl space-y-4">
-          <h3 class="text-2xl font-black text-yellow-300 text-center flex items-center justify-center gap-2">
+        <div class="app-card p-6 rounded-3xl space-y-4">
+          <h3 class="text-lg font-black text-slate-900 text-center flex items-center justify-center gap-2">
             <span>🏆</span> LIVE LEADERBOARD
           </h3>
           <div id="live-scoreboard-list" class="space-y-2 max-w-xl mx-auto"></div>
@@ -239,68 +261,77 @@
       </div>
     </section>
 
-    <!-- SCREEN 6: SUMMARY -->
-    <section id="screen-summary" class="hidden space-y-8 text-center py-6">
-      <div class="bg-white p-8 rounded-3xl shadow-2xl border-4 border-yellow-400 space-y-8">
+    <!-- 6. SUMMARY -->
+    <section id="screen-summary" class="hidden space-y-8 text-center py-4">
+      <div class="app-card p-8 md:p-12 rounded-3xl space-y-8">
         <div class="space-y-2">
-          <div class="text-7xl animate-bounce">🎉</div>
-          <h2 class="text-3xl md:text-5xl font-black text-blue-950">TECHNOLOGY SAFETY CHAMPION!</h2>
-          <p class="text-2xl text-slate-600 font-bold">Great job completing all safety scenarios!</p>
+          <div class="text-6xl animate-bounce">🎉</div>
+          <h2 class="text-3xl md:text-5xl font-black text-slate-900">Session Complete!</h2>
+          <p class="text-slate-600 text-base font-medium">Great job evaluating these digital scenarios.</p>
         </div>
 
-        <div class="max-w-xl mx-auto bg-slate-50 rounded-2xl p-6 border-2 border-slate-200">
-          <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center justify-center gap-2">
-            <span>🏆</span> Final Leaderboard
+        <div class="max-w-xl mx-auto bg-slate-50 rounded-2xl p-6 border border-slate-200">
+          <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center justify-center gap-2">
+            <span>🏆</span> Final Leaderboard Standings
           </h3>
-          <div id="final-leaderboard" class="space-y-3"></div>
+          <div id="final-leaderboard" class="space-y-2"></div>
         </div>
 
-        <div class="bg-blue-900 text-white p-8 rounded-3xl space-y-6 text-left shadow-lg">
-          <h3 class="text-3xl font-black text-yellow-300 text-center tracking-wide">3 GOLDEN SAFETY RULES</h3>
-          <ul class="space-y-4 text-xl md:text-2xl font-bold">
-            <li class="flex items-start gap-4">
-              <span class="bg-yellow-400 text-blue-950 rounded-full w-10 h-10 flex items-center justify-center font-black shrink-0">1</span>
-              <span><strong class="text-yellow-300">STOP</strong> before clicking links or downloading attachments.</span>
+        <div class="bg-indigo-50/70 p-6 md:p-8 rounded-2xl space-y-6 text-left border border-indigo-100">
+          <h3 class="text-xl font-black text-indigo-900 text-center uppercase tracking-wide">3 Golden Rules for Digital Safety</h3>
+          <ul class="space-y-4 text-base md:text-lg text-slate-800 font-medium">
+            <li class="flex items-start gap-3">
+              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm">1</span>
+              <span><strong class="text-slate-900 font-bold">STOP</strong> before clicking unknown links or opening attachments.</span>
             </li>
-            <li class="flex items-start gap-4">
-              <span class="bg-yellow-400 text-blue-950 rounded-full w-10 h-10 flex items-center justify-center font-black shrink-0">2</span>
-              <span><strong class="text-yellow-300">NEVER</strong> share your personal passwords, PINs, or OTP codes with anyone.</span>
+            <li class="flex items-start gap-3">
+              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm">2</span>
+              <span><strong class="text-slate-900 font-bold">NEVER</strong> give out OTP codes, PINs, or sensitive banking details over the phone.</span>
             </li>
-            <li class="flex items-start gap-4">
-              <span class="bg-yellow-400 text-blue-950 rounded-full w-10 h-10 flex items-center justify-center font-black shrink-0">3</span>
-              <span><strong class="text-yellow-300">WHEN IN DOUBT</strong>, stop and ask a family member or trusted friend for help.</span>
+            <li class="flex items-start gap-3">
+              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm">3</span>
+              <span><strong class="text-slate-900 font-bold">VERIFY</strong> suspicious messages by calling official contact numbers directly.</span>
             </li>
           </ul>
         </div>
 
-        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-2xl px-10 py-5 rounded-2xl shadow-xl transition btn-touch">
-          Play Again 🔄
+        <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg px-10 py-4 rounded-xl shadow-md transition btn-touch">
+          Restart Game Session 🔄
         </button>
       </div>
     </section>
 
   </main>
 
-  <footer class="bg-slate-800 text-slate-300 py-4 text-center text-base border-t border-slate-700">
-    <p>Tech or Trick? • Health Promotion Activity for Senior Safety</p>
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 font-medium">
+    <p>Tech or Trick? • Made by Rafik :D</p>
   </footer>
 
   <script>
+    // EXACT FIRST 6 SCENARIOS RESTORED EXACTLY
     const SCENARIOS = [
       {
         id: 1,
-        title: "Suspicious Bank SMS",
+        title: "Suspicious Bank Alert SMS",
         type: "phone",
-        header: "Messages • Bank Alert",
-        prompt: "WHAT WOULD YOU DO?",
+        header: "Messages • Bank Safety Alert",
+        prompt: "Is this message safe to click?",
         mockContent: `
-          <div class="space-y-4 p-2">
-            <div class="text-center text-xs text-slate-400 font-bold uppercase">Today 10:42 AM</div>
-            <div class="bg-slate-200 text-slate-900 p-4 rounded-2xl rounded-tl-none max-w-[85%] space-y-2 shadow-sm">
-              <p class="font-extrabold text-red-600 text-lg">YOUR BANK ALERT</p>
-              <p class="text-base leading-snug">URGENT: Your account will be suspended today due to irregular activity.</p>
-              <p class="text-base leading-snug">Please verify your account immediately:</p>
-              <p id="scen1-link" class="text-blue-600 underline font-bold break-all">www.bank-security-verify.com</p>
+          <div class="space-y-3 p-1">
+            <div class="text-center text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Today 10:42 AM</div>
+            <div class="flex items-start gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0">B</div>
+              <div class="bg-white text-slate-900 p-4 rounded-2xl rounded-tl-xs space-y-2 shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center border-b pb-1.5 border-slate-100">
+                  <span class="font-extrabold text-xs text-red-600 tracking-wide">SECURE BANK ALERT</span>
+                  <span class="text-[10px] text-slate-400">SMS</span>
+                </div>
+                <p class="text-sm text-slate-800 font-medium leading-relaxed">Your account has been temporarily restricted due to unauthorized login attempts.</p>
+                <p class="text-xs text-slate-600">Please verify your identity immediately to restore access:</p>
+                <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-center">
+                  <p id="scen1-link" class="text-blue-600 font-mono text-xs font-bold underline break-all">https://www.bank-verify-security-check.com</p>
+                </div>
+              </div>
             </div>
           </div>
         `,
@@ -311,8 +342,8 @@
         correct: "DANGER",
         badge: "🔴 DANGER",
         badgeBg: "bg-red-600",
-        explanationTitle: "Fake Bank Link Scam",
-        explanation: "Do not click suspicious links or provide your bank details or OTP. Banks will never ask you to verify accounts via random websites. When in doubt, call your bank using the official phone number printed on your bank card.",
+        explanationTitle: "Fake Bank Verification Link",
+        explanation: "Banks will never send text messages with web links forcing you to log in or confirm security details. Always log in directly through your official banking application or call the official phone number on your card.",
         onReveal: () => {
           const link = document.getElementById('scen1-link');
           if (link) link.classList.add('highlight-danger');
@@ -320,102 +351,105 @@
       },
       {
         id: 2,
-        title: "Fake Shopping Website",
+        title: "Fake E-Commerce Deals",
         type: "browser",
         header: "https://www.super-discount-store-cheap.xyz/iphone17-deal",
-        prompt: "Would you trust this website?",
+        prompt: "Would you trust this store with your card?",
         mockContent: `
-          <div class="p-6 text-center space-y-4 bg-gradient-to-b from-yellow-50 to-white">
-            <div id="scen2-banner" class="bg-red-600 text-white font-black py-2 px-4 rounded-lg text-xl animate-pulse">
-              LIMITED OFFER!!! 90% OFF
+          <div class="p-5 text-center space-y-4 bg-slate-50 border-b border-slate-200">
+            <div id="scen2-banner" class="bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold py-2 px-4 rounded-xl text-sm shadow-sm flex justify-between items-center">
+              <span>🔥 FLASH SALE ENDS SOON</span>
+              <span id="scen2-timer" class="font-mono bg-black/30 px-2 py-0.5 rounded text-amber-300">03:21</span>
             </div>
-            <h4 class="text-3xl font-black text-slate-900">Brand New iPhone 17 Pro</h4>
-            <div class="flex justify-center items-baseline space-x-3">
-              <span class="text-4xl font-extrabold text-emerald-600">ONLY 2,999 THB</span>
-              <span class="text-xl text-slate-400 line-through">48,000 THB</span>
+            
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+              <h4 class="text-xl font-black text-slate-900">Brand New Smartphone Pro Max</h4>
+              <div class="flex justify-center items-baseline gap-3">
+                <span class="text-3xl font-black text-emerald-600">2,999 THB</span>
+                <span class="text-base text-slate-400 line-through">48,000 THB</span>
+                <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded">-93%</span>
+              </div>
+              <p class="text-xs text-slate-500">Free International Shipping • Payment via Transfer Only</p>
             </div>
-            <div id="scen2-timer" class="inline-block bg-slate-900 text-yellow-400 font-mono text-2xl font-black px-6 py-2 rounded-xl">
-              TIME LEFT: 03:21
-            </div>
-            <p class="text-sm text-slate-500 italic">Seller: Unknown Direct Import Store</p>
           </div>
         `,
         options: [
-          { label: "🟢 TRUST / SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 SAFE TO BUY", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 FAKE SHOP / DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
         badgeBg: "bg-red-600",
-        explanationTitle: "Warning Signs of Fake Online Shops",
-        explanation: "Watch out for huge unrealistic discounts, unknown web addresses (like .xyz or strange spellings), urgent countdown timers creating fake panic, and unverified seller accounts.",
+        explanationTitle: "Unrealistic E-Commerce Discounts",
+        explanation: "Extremely low prices (90% off expensive electronics), unusual web domain extensions (.xyz), urgent countdown timers, and bank-transfer-only options are telltale signs of a fake website.",
         onReveal: () => {
           const banner = document.getElementById('scen2-banner');
-          const timer = document.getElementById('scen2-timer');
           if (banner) banner.classList.add('highlight-danger');
-          if (timer) timer.classList.add('highlight-danger');
         }
       },
       {
         id: 3,
-        title: "Fake Family Member Emergency",
+        title: "Impersonated Relative Message",
         type: "phone",
-        header: "LINE / WhatsApp Chat",
-        prompt: "What should you do?",
+        header: "Chat • Direct Message",
+        prompt: "What should you do first?",
         mockContent: `
-          <div class="space-y-3 p-2 bg-emerald-50/50 rounded-xl">
-            <div class="text-center text-xs text-slate-400 font-bold">11:15 AM</div>
-            <div class="bg-white text-slate-900 p-4 rounded-2xl rounded-tl-none max-w-[90%] shadow-md border space-y-2">
-              <p class="font-bold text-emerald-800">Unknown Contact Number</p>
-              <p class="text-lg">“Grandma, this is me! I lost my phone and this is my new temporary number.”</p>
-              <p class="text-lg font-bold text-red-600">“I urgently need 10,000 baht to pay for an emergency repair. Please transfer it to this account right now.”</p>
-            </div>
-          </div>
-        `,
-        options: [
-          { label: "🟢 Send the money immediately", type: "SAFE", color: "bg-blue-600 hover:bg-blue-700" },
-          { label: "🔴 Call family member on old number first", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
-        ],
-        correct: "DANGER",
-        badge: "🔴 ALWAYS VERIFY FIRST",
-        badgeBg: "bg-red-600",
-        explanationTitle: "Impersonation Emergency Scam",
-        explanation: "Scammers often pretend to be grandchildren or relatives in trouble. ALWAYS stop and call the family member using their ORIGINAL saved phone number or ask another family member before transferring money.",
-        onReveal: null
-      },
-      {
-        id: 4,
-        title: "OTP Verification Scam",
-        type: "phone",
-        header: "Verification Code Screen",
-        prompt: "Should you give them the OTP code?",
-        mockContent: `
-          <div class="space-y-4 p-2 text-center">
-            <div class="bg-slate-200 p-4 rounded-2xl space-y-1">
-              <p class="text-xs text-slate-500 font-bold uppercase">SMS Message</p>
-              <p class="text-sm text-slate-700">Your secret login OTP verification code is:</p>
-              <p id="scen4-otp" class="text-4xl font-mono font-black text-blue-700 tracking-widest my-2">483921</p>
-              <p class="text-xs text-red-600 font-bold">Do not share this code with anyone.</p>
-            </div>
-            
-            <div class="bg-amber-100 border-2 border-amber-300 p-3 rounded-2xl text-left flex items-center space-x-3">
-              <span class="text-3xl">📞</span>
-              <div>
-                <p class="font-bold text-amber-900">Incoming Caller Says:</p>
-                <p class="text-sm text-amber-800 font-medium">"Hello, I am support staff. Please read me the 6-digit OTP code sent to your phone to confirm your account."</p>
+          <div class="space-y-3 p-1">
+            <div class="text-center text-[11px] text-slate-400 font-semibold">11:15 AM</div>
+            <div class="flex items-start gap-2">
+              <div class="w-8 h-8 rounded-full bg-slate-300 text-slate-600 font-bold flex items-center justify-center text-xs shrink-0">?</div>
+              <div class="bg-emerald-50 border border-emerald-200 text-slate-900 p-3.5 rounded-2xl rounded-tl-xs space-y-2 max-w-[90%] shadow-sm">
+                <p class="font-bold text-emerald-900 text-xs">Unknown Mobile Number</p>
+                <p class="text-sm font-medium text-slate-800">"Grandma, it's me! My old phone broke so I'm using this new temporary number."</p>
+                <p class="text-sm font-bold text-red-700 bg-white p-2.5 rounded-lg border border-red-200">"I'm at the garage right now and urgently need 10,000 THB for emergency repairs. Can you transfer it right now?"</p>
               </div>
             </div>
           </div>
         `,
         options: [
-          { label: "🟢 Give the OTP code", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🟢 Transfer money immediately", type: "SAFE", color: "bg-indigo-600 hover:bg-indigo-700" },
+          { label: "🔴 Call old contact number first", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "DANGER",
+        badge: "🔴 VERIFY IDENTITY FIRST",
+        badgeBg: "bg-red-600",
+        explanationTitle: "Family Emergency Impersonation",
+        explanation: "Scammers frequently pretend to be children or grandchildren in urgent trouble. Always pause and call your relative on their original phone number, or speak to another family member before transferring money.",
+        onReveal: null
+      },
+      {
+        id: 4,
+        title: "Phone Scam Asking for OTP",
+        type: "phone",
+        header: "Phone App • Verification",
+        prompt: "Should you share the 6-digit code?",
+        mockContent: `
+          <div class="space-y-3 p-1">
+            <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl space-y-1 text-center">
+              <span class="text-xs font-bold text-blue-800 uppercase tracking-wide">SMS Received</span>
+              <p class="text-xs text-slate-600">Your security code is:</p>
+              <p id="scen4-otp" class="text-3xl font-mono font-black text-blue-900 tracking-widest my-1">483-921</p>
+              <p class="text-[11px] text-red-600 font-bold">Do not share this code with anyone.</p>
+            </div>
+            
+            <div class="bg-slate-900 text-white p-3.5 rounded-xl border border-slate-700 flex items-center space-x-3">
+              <div class="text-2xl">📞</div>
+              <div class="text-xs space-y-1">
+                <p class="font-bold text-amber-400">Caller (Claims to be Bank Support):</p>
+                <p class="text-slate-300 font-normal">"To secure your account from hackers, please read back the 6-digit verification code sent to your phone."</p>
+              </div>
+            </div>
+          </div>
+        `,
+        options: [
+          { label: "🟢 Share code with agent", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
           { label: "🔴 DANGER: Keep Code Secret", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
         badgeBg: "bg-red-600",
-        explanationTitle: "Never Share Your OTP",
-        explanation: "Your OTP (One-Time Password) is like the key to your safe. Bank staff, police, and legitimate companies will NEVER ask you for your OTP over the phone or in chat.",
+        explanationTitle: "Never Disclose OTP Codes",
+        explanation: "One-Time Passwords (OTPs) are master keys to your online banking and social media accounts. Bank employees and legitimate companies will NEVER ask for your OTP over the phone.",
         onReveal: () => {
           const otp = document.getElementById('scen4-otp');
           if (otp) otp.classList.add('highlight-danger');
@@ -423,28 +457,28 @@
       },
       {
         id: 5,
-        title: "Official Device System Update",
+        title: "Built-In System Update",
         type: "phone",
-        header: "Settings • General",
-        prompt: "Is this action generally safe?",
+        header: "Settings • Software Update",
+        prompt: "Is performing this update safe?",
         mockContent: `
-          <div class="p-4 bg-white rounded-xl space-y-4">
-            <div class="flex items-center space-x-3 border-b pb-3">
-              <div class="bg-slate-800 text-white p-2 rounded-xl text-xl">⚙️</div>
+          <div class="p-3 bg-white rounded-xl space-y-3 text-slate-900">
+            <div class="flex items-center space-x-3 border-b pb-2.5 border-slate-200">
+              <div class="bg-slate-800 text-white p-2 rounded-xl text-lg">⚙️</div>
               <div>
-                <h4 class="font-bold text-xl text-slate-900">Software Update</h4>
-                <p class="text-xs text-slate-500">Official System OS 18.2</p>
+                <h4 class="font-bold text-base">Official OS Update 18.2</h4>
+                <p class="text-xs text-slate-500">System Developer • Official Release</p>
               </div>
             </div>
-            <div class="space-y-2 text-slate-700 text-base">
-              <p class="font-semibold">Features & Security Improvements:</p>
-              <ul class="list-disc list-inside text-sm space-y-1 text-slate-600">
-                <li>Fixes security vulnerabilities</li>
-                <li>Downloaded directly from official settings</li>
+            <div class="space-y-1 text-xs text-slate-700">
+              <p class="font-bold text-slate-900">Security Improvements:</p>
+              <ul class="list-disc list-inside space-y-1 text-slate-600">
+                <li>Patches system vulnerability gaps</li>
+                <li>Downloaded directly inside phone System Settings</li>
               </ul>
             </div>
-            <div class="bg-slate-100 p-3 rounded-xl text-center font-bold text-blue-600">
-              Update Installed from Settings Menu
+            <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-lg text-center font-bold text-xs text-blue-800">
+              Update Verified • Settings Menu
             </div>
           </div>
         `,
@@ -455,35 +489,38 @@
         correct: "SAFE",
         badge: "🟢 SAFE",
         badgeBg: "bg-emerald-600",
-        explanationTitle: "Safe System Updates",
-        explanation: "Updating your phone through the official built-in Settings app is safe and recommended to protect your device. Avoid downloading updates from pop-up ads or web links.",
+        explanationTitle: "Legitimate System Updates",
+        explanation: "System software updates installed through your device's built-in Settings menu are safe and recommended. They protect your device against newly discovered security flaws.",
         onReveal: null
       },
       {
         id: 6,
-        title: "Prize Scam with Fee Demand",
+        title: "Lucky Winner Upfront Fee Scam",
         type: "phone",
-        header: "SMS Notification",
+        header: "SMS Notification • Prize Alert",
         prompt: "WHAT WOULD YOU DO?",
         mockContent: `
-          <div class="space-y-4 p-2">
-            <div class="bg-yellow-100 border-2 border-yellow-400 p-4 rounded-2xl text-slate-900 space-y-3 shadow-md">
-              <p class="text-2xl font-black text-amber-800 text-center">🎉 CONGRATULATIONS!!!</p>
-              <p class="text-lg font-bold text-center text-slate-800">You won 50,000 THB in our lucky draw!</p>
-              <hr class="border-yellow-300">
-              <p class="text-base text-slate-700 leading-snug">To claim your cash prize, please transfer a <strong class="text-red-600">2,000 THB processing fee</strong> to account 123-4-56789 within 1 hour.</p>
+          <div class="space-y-3 p-1">
+            <div class="bg-amber-50 border-2 border-amber-300 p-4 rounded-xl text-slate-900 space-y-2 text-center shadow-sm">
+              <span class="text-3xl">🎉</span>
+              <h4 class="text-lg font-black text-amber-900">CONGRATULATIONS!</h4>
+              <p class="text-xs font-bold text-slate-800">You were selected as the winner of 50,000 THB cash!</p>
+              <div class="bg-white p-2.5 rounded-lg border border-amber-200 text-left text-xs space-y-1 text-slate-700">
+                <p class="font-semibold text-red-600">Action Required:</p>
+                <p>Transfer 1,500 THB processing and customs duty fee to account #987-1-23456 to claim your transfer.</p>
+              </div>
             </div>
           </div>
         `,
         options: [
-          { label: "🟢 SAFE: Pay fee & get prize", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 DANGER: Scam Alert", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 Pay fee to receive prize", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 DANGER: Upfront Fee Scam", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
         badgeBg: "bg-red-600",
-        explanationTitle: "Upfront Fee Prize Scam",
-        explanation: "Unexpected lottery wins or prizes that require you to pay money first to receive your reward are ALWAYS scams. Real prizes will never require upfront money transfers.",
+        explanationTitle: "Advance-Fee Lottery Fraud",
+        explanation: "Legitimate contests never ask winners to pay money, processing fees, or taxes in advance to receive cash rewards.",
         onReveal: null
       }
     ];
@@ -515,7 +552,6 @@
     function listenToRoom() {
       const roomRef = db.ref('rooms/' + state.roomCode);
 
-      // Listen for players joining & score/streak updates
       roomRef.child('players').on('value', snapshot => {
         const val = snapshot.val() || {};
         state.players = Object.values(val);
@@ -530,7 +566,6 @@
         if (state.isRevealed) updateLiveScoreboardUI();
       });
 
-      // Listen for game state updates
       roomRef.child('gameState').on('value', snapshot => {
         const gs = snapshot.val();
         if (!gs) return;
@@ -561,7 +596,7 @@
       });
     }
 
-    /* LEADER LOGIC */
+    /* HOST CONTROLS */
     function initLeader() {
       state.role = 'leader';
       state.roomCode = generateRoomCode();
@@ -588,11 +623,11 @@
       document.getElementById('player-count').innerText = state.players.length;
       const listContainer = document.getElementById('player-list');
       if (state.players.length === 0) {
-        listContainer.innerHTML = `<span class="text-slate-400 italic text-lg">Waiting for participants to scan QR code...</span>`;
+        listContainer.innerHTML = `<span class="text-slate-400 italic text-sm">Waiting for participants to join...</span>`;
         return;
       }
       listContainer.innerHTML = state.players.map(p => `
-        <span class="bg-blue-100 text-blue-900 border-2 border-blue-300 px-4 py-2 rounded-2xl text-xl font-bold flex items-center gap-2 shadow-sm">
+        <span class="bg-white text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl text-sm font-bold shadow-sm flex items-center gap-1.5">
           👤 ${p.name}
         </span>
       `).join('');
@@ -609,7 +644,7 @@
       setupScenarioUI();
     }
 
-    /* PARTICIPANT LOGIC */
+    /* PARTICIPANT CONTROLS */
     function initParticipantJoin() {
       state.role = 'participant';
       showScreen('screen-participant-join');
@@ -641,7 +676,7 @@
       showScreen('screen-participant-waiting');
     }
 
-    /* SCENARIO & ANSWER LOGIC */
+    /* SCENARIO RENDER */
     function setupScenarioUI() {
       const scenario = SCENARIOS[state.currentScenarioIdx];
 
@@ -668,23 +703,23 @@
       const stage = document.getElementById('scenario-stage');
       if (scenario.type === 'phone') {
         stage.innerHTML = `
-          <div class="phone-mockup max-w-sm mx-auto">
-            <div class="bg-slate-800 h-6 flex justify-center items-center"><div class="w-16 h-3 bg-slate-900 rounded-full"></div></div>
-            <div class="bg-slate-200 px-4 py-3 border-b border-slate-300 font-bold text-slate-700 text-center text-lg flex justify-between items-center">
-              <span>💬</span><span>${scenario.header}</span><span>🔋</span>
+          <div class="phone-mockup max-w-sm mx-auto border-slate-900 shadow-2xl">
+            <div class="bg-slate-900 h-6 flex justify-center items-center"><div class="w-16 h-3 bg-slate-800 rounded-full"></div></div>
+            <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 font-bold text-slate-700 text-xs flex justify-between items-center">
+              <span>📱</span><span>${scenario.header}</span><span>🔋 100%</span>
             </div>
-            <div class="p-4 bg-slate-50 min-h-[220px]">${scenario.mockContent}</div>
+            <div class="p-3 bg-slate-100 min-h-[220px]">${scenario.mockContent}</div>
           </div>`;
       } else {
         stage.innerHTML = `
-          <div class="browser-mockup max-w-xl mx-auto">
-            <div class="bg-slate-200 px-4 py-2 border-b border-slate-300 flex items-center space-x-2">
-              <div class="flex space-x-1">
-                <span class="w-3 h-3 bg-red-500 rounded-full inline-block"></span>
-                <span class="w-3 h-3 bg-yellow-500 rounded-full inline-block"></span>
-                <span class="w-3 h-3 bg-green-500 rounded-full inline-block"></span>
+          <div class="browser-mockup max-w-xl mx-auto shadow-2xl">
+            <div class="bg-slate-100 px-3 py-2 border-b border-slate-200 flex items-center space-x-2">
+              <div class="flex space-x-1.5">
+                <span class="w-2.5 h-2.5 bg-red-400 rounded-full inline-block"></span>
+                <span class="w-2.5 h-2.5 bg-amber-400 rounded-full inline-block"></span>
+                <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full inline-block"></span>
               </div>
-              <div class="bg-white text-xs md:text-sm font-mono text-slate-600 px-3 py-1 rounded-md flex-grow truncate border border-slate-300">
+              <div class="bg-white text-xs font-mono text-slate-600 px-3 py-1 rounded-md flex-grow truncate border border-slate-200 shadow-inner">
                 🔒 ${scenario.header}
               </div>
             </div>
@@ -701,18 +736,18 @@
 
       if (hasAnswered || state.isRevealed) {
         container.innerHTML = `
-          <div class="col-span-full bg-blue-50 border-4 border-blue-300 p-6 rounded-2xl text-center space-y-2">
+          <div class="col-span-full bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl text-center space-y-2">
             <span class="text-4xl">🔒</span>
-            <p class="text-2xl font-black text-blue-900">
-              ${hasAnswered ? "Answer Submitted!" : "Time's Up!"}
+            <p class="text-2xl font-black text-indigo-600">
+              ${hasAnswered ? "Answer Recorded!" : "Time's Up!"}
             </p>
-            <p class="text-xl text-slate-700">Look at the main screen for the explanation!</p>
+            <p class="text-sm text-slate-600 font-medium">Look at the host screen for scenario results.</p>
           </div>`;
         return;
       }
 
       container.innerHTML = scenario.options.map(opt => `
-        <button onclick="submitParticipantAnswer('${opt.type}')" class="w-full ${opt.color} text-white font-black text-2xl py-6 rounded-2xl shadow-xl transition active:scale-95 btn-touch">
+        <button onclick="submitParticipantAnswer('${opt.type}')" class="w-full ${opt.color} text-white font-black text-xl py-5 rounded-2xl shadow-md transition active:scale-95 btn-touch">
           ${opt.label}
         </button>
       `).join('');
@@ -720,7 +755,6 @@
 
     function submitParticipantAnswer(optionType) {
       if (state.answers[state.playerName] || state.isRevealed) return;
-
       db.ref(`rooms/${state.roomCode}/answers/${state.currentScenarioIdx}/${state.playerName}`).set(optionType);
     }
 
@@ -736,7 +770,6 @@
       if (state.role === 'leader') {
         db.ref(`rooms/${state.roomCode}/gameState`).update({ isRevealed: true });
 
-        // Calculate scores and streaks in database
         state.players.forEach(p => {
           const playerAns = state.answers[p.name];
           const isCorrect = playerAns === scenario.correct;
@@ -762,7 +795,7 @@
 
       const expCard = document.getElementById('explanation-card');
       document.getElementById('explanation-badge').innerText = scenario.badge;
-      document.getElementById('explanation-badge').className = `text-3xl px-4 py-2 rounded-2xl font-black text-white ${scenario.badgeBg}`;
+      document.getElementById('explanation-badge').className = `text-lg px-4 py-1.5 rounded-xl font-black text-white ${scenario.badgeBg}`;
       document.getElementById('explanation-title').innerText = scenario.explanationTitle;
       document.getElementById('explanation-text').innerText = scenario.explanation;
       
@@ -781,15 +814,15 @@
       const sorted = [...state.players].sort((a,b) => (b.score || 0) - (a.score || 0));
       document.getElementById('live-scoreboard-list').innerHTML = sorted.map((p, idx) => {
         let rankBadge = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `#${idx + 1}`;
-        let streakBadge = p.streak > 1 ? `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold ml-2">🔥 ${p.streak}x streak</span>` : '';
+        let streakBadge = p.streak > 1 ? `<span class="bg-amber-100 text-amber-800 border border-amber-300 text-xs px-2 py-0.5 rounded-full font-bold ml-2">🔥 ${p.streak}x streak</span>` : '';
         return `
-          <div class="flex justify-between items-center bg-slate-800 p-3 rounded-xl border border-slate-700 text-lg">
-            <span class="font-bold flex items-center gap-2">
+          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200 text-base">
+            <span class="font-bold flex items-center gap-2 text-slate-800">
               <span>${rankBadge}</span>
               <span>${p.name}</span>
               ${streakBadge}
             </span>
-            <span class="text-yellow-400 font-black">${p.score || 0} pts</span>
+            <span class="text-indigo-600 font-mono font-black">${p.score || 0} pts</span>
           </div>`;
       }).join('');
     }
@@ -822,9 +855,9 @@
       document.getElementById('final-leaderboard').innerHTML = sorted.map((p, idx) => {
         let medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⭐";
         return `
-          <div class="flex justify-between items-center bg-white p-4 rounded-xl border-2 border-slate-200 text-xl font-bold">
-            <span class="flex items-center gap-3"><span class="text-2xl">${medal}</span><span>${p.name}</span></span>
-            <span class="text-blue-600 font-black">${p.score || 0} pts</span>
+          <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200 text-base font-bold shadow-sm">
+            <span class="flex items-center gap-3 text-slate-800"><span class="text-xl">${medal}</span><span>${p.name}</span></span>
+            <span class="text-indigo-600 font-mono font-black">${p.score || 0} pts</span>
           </div>`;
       }).join('');
     }

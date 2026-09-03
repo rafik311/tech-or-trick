@@ -13,7 +13,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAhb-6kKDtpBuf1KHLsYtGdliPNuI_Folo",
       authDomain: "tech-or-trick.firebaseapp.com",
@@ -24,7 +23,6 @@
       appId: "1:516932444485:web:61b86a923376002627de2c"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
   </script>
@@ -158,7 +156,7 @@
 
           <div class="text-left">
             <label class="block text-xl font-bold text-slate-800 mb-2">Your Name</label>
-            <input type="text" id="join-name-input" maxlength="15" placeholder="e.g. Grandma Rose" class="w-full p-4 text-2xl font-bold text-center border-4 border-slate-300 rounded-2xl focus:border-blue-500 outline-none">
+            <input type="text" id="join-name-input" maxlength="15" placeholder="e.g. Grandpa Rafik" class="w-full p-4 text-2xl font-bold text-center border-4 border-slate-300 rounded-2xl focus:border-blue-500 outline-none">
           </div>
 
           <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-black text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
@@ -187,12 +185,16 @@
           <span class="text-lg font-bold text-slate-500 uppercase tracking-wider block">Scenario</span>
           <span id="scenario-progress-text" class="text-2xl font-black text-blue-950">1 of 6</span>
         </div>
-        <div class="w-1/2 bg-slate-200 h-6 rounded-full overflow-hidden border border-slate-300">
+        <div class="w-1/3 bg-slate-200 h-6 rounded-full overflow-hidden border border-slate-300">
           <div id="progress-bar-fill" class="bg-blue-600 h-full transition-all duration-500" style="width: 16.6%;"></div>
         </div>
         <div id="leader-answer-counter" class="hidden text-right">
           <span class="text-sm font-bold text-slate-500 uppercase block">Responses</span>
           <span id="answers-received-count" class="text-2xl font-black text-green-600">0 / 0</span>
+        </div>
+        <div id="participant-streak-badge" class="hidden text-right">
+          <span class="text-sm font-bold text-slate-500 uppercase block">Streak</span>
+          <span id="player-streak-text" class="text-2xl font-black text-orange-500">🔥 0</span>
         </div>
       </div>
 
@@ -217,12 +219,23 @@
         <div id="participant-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
-      <div id="explanation-card" class="hidden bg-amber-50 p-6 md:p-8 rounded-3xl border-4 border-amber-400 space-y-4 shadow-xl">
-        <div class="flex items-center space-y-2 md:space-y-0 md:space-x-4 flex-col md:flex-row text-center md:text-left">
-          <span id="explanation-badge" class="text-4xl px-4 py-2 rounded-2xl font-black text-white bg-red-600">🔴 DANGER</span>
-          <h3 id="explanation-title" class="text-2xl md:text-3xl font-extrabold text-slate-900">Scam Warning Key Points</h3>
+      <!-- EXPLANATION & LIVE SCOREBOARD -->
+      <div id="explanation-card" class="hidden space-y-6">
+        <div class="bg-amber-50 p-6 md:p-8 rounded-3xl border-4 border-amber-400 space-y-4 shadow-xl">
+          <div class="flex items-center space-y-2 md:space-y-0 md:space-x-4 flex-col md:flex-row text-center md:text-left">
+            <span id="explanation-badge" class="text-4xl px-4 py-2 rounded-2xl font-black text-white bg-red-600">🔴 DANGER</span>
+            <h3 id="explanation-title" class="text-2xl md:text-3xl font-extrabold text-slate-900">Scam Warning Key Points</h3>
+          </div>
+          <p id="explanation-text" class="text-xl md:text-2xl text-slate-800 font-semibold leading-relaxed"></p>
         </div>
-        <p id="explanation-text" class="text-xl md:text-2xl text-slate-800 font-semibold leading-relaxed"></p>
+
+        <!-- LIVE SCOREBOARD AFTER ANSWER -->
+        <div class="bg-slate-900 text-white p-6 rounded-3xl border-4 border-blue-500 shadow-xl space-y-4">
+          <h3 class="text-2xl font-black text-yellow-300 text-center flex items-center justify-center gap-2">
+            <span>🏆</span> LIVE LEADERBOARD
+          </h3>
+          <div id="live-scoreboard-list" class="space-y-2 max-w-xl mx-auto"></div>
+        </div>
       </div>
     </section>
 
@@ -502,11 +515,19 @@
     function listenToRoom() {
       const roomRef = db.ref('rooms/' + state.roomCode);
 
-      // Listen for players joining
+      // Listen for players joining & score/streak updates
       roomRef.child('players').on('value', snapshot => {
         const val = snapshot.val() || {};
         state.players = Object.values(val);
         if (state.role === 'leader') updateLeaderLobbyUI();
+        
+        if (state.role === 'participant') {
+          const myData = val[state.playerName];
+          if (myData) {
+            document.getElementById('player-streak-text').innerText = `🔥 ${myData.streak || 0}`;
+          }
+        }
+        if (state.isRevealed) updateLiveScoreboardUI();
       });
 
       // Listen for game state updates
@@ -520,7 +541,6 @@
         if (state.role === 'participant') {
           if (gs.status === 'PLAYING') {
             showScreen('screen-gameplay');
-            // Listen specifically to player's current scenario answer from database
             listenToCurrentScenarioAnswers();
           } else if (gs.status === 'ENDED') {
             showScreen('screen-summary');
@@ -551,7 +571,6 @@
       document.getElementById('display-room-code').innerText = state.roomCode;
       document.getElementById('lobby-room-code').innerText = state.roomCode;
 
-      // Set initial room data in cloud
       db.ref('rooms/' + state.roomCode).set({
         gameState: { status: 'LOBBY', currentScenarioIdx: 0, isRevealed: false }
       });
@@ -612,10 +631,10 @@
       document.getElementById('display-room-code').innerText = state.roomCode;
       document.getElementById('waiting-player-name').innerText = state.playerName;
 
-      // Register player in Cloud Database
       db.ref(`rooms/${state.roomCode}/players/${state.playerName}`).set({
         name: state.playerName,
-        score: 0
+        score: 0,
+        streak: 0
       });
 
       listenToRoom();
@@ -634,6 +653,7 @@
         document.getElementById('leader-control-panel').classList.remove('hidden');
         document.getElementById('participant-control-panel').classList.add('hidden');
         document.getElementById('leader-answer-counter').classList.remove('hidden');
+        document.getElementById('participant-streak-badge').classList.add('hidden');
         document.getElementById('btn-reveal-answer').classList.remove('hidden');
         document.getElementById('btn-next-scenario').classList.add('hidden');
         updateLeaderAnswerCount();
@@ -641,6 +661,7 @@
         document.getElementById('leader-control-panel').classList.add('hidden');
         document.getElementById('participant-control-panel').classList.remove('hidden');
         document.getElementById('leader-answer-counter').classList.add('hidden');
+        document.getElementById('participant-streak-badge').classList.remove('hidden');
         renderParticipantOptions(scenario);
       }
 
@@ -715,11 +736,25 @@
       if (state.role === 'leader') {
         db.ref(`rooms/${state.roomCode}/gameState`).update({ isRevealed: true });
 
-        // Calculate scores in database
+        // Calculate scores and streaks in database
         state.players.forEach(p => {
-          if (state.answers[p.name] === scenario.correct) {
-            db.ref(`rooms/${state.roomCode}/players/${p.name}/score`).transaction(s => (s || 0) + 100);
+          const playerAns = state.answers[p.name];
+          const isCorrect = playerAns === scenario.correct;
+
+          const currentStreak = isCorrect ? (p.streak || 0) + 1 : 0;
+          let pointsEarned = 0;
+
+          if (isCorrect) {
+            let multiplier = 1;
+            if (currentStreak === 2) multiplier = 1.5;
+            if (currentStreak >= 3) multiplier = 2;
+            pointsEarned = Math.round(100 * multiplier);
           }
+
+          db.ref(`rooms/${state.roomCode}/players/${p.name}`).update({
+            score: (p.score || 0) + pointsEarned,
+            streak: currentStreak
+          });
         });
       }
 
@@ -730,6 +765,8 @@
       document.getElementById('explanation-badge').className = `text-3xl px-4 py-2 rounded-2xl font-black text-white ${scenario.badgeBg}`;
       document.getElementById('explanation-title').innerText = scenario.explanationTitle;
       document.getElementById('explanation-text').innerText = scenario.explanation;
+      
+      updateLiveScoreboardUI();
       expCard.classList.remove('hidden');
 
       if (state.role === 'leader') {
@@ -738,6 +775,23 @@
       } else {
         renderParticipantOptions(scenario);
       }
+    }
+
+    function updateLiveScoreboardUI() {
+      const sorted = [...state.players].sort((a,b) => (b.score || 0) - (a.score || 0));
+      document.getElementById('live-scoreboard-list').innerHTML = sorted.map((p, idx) => {
+        let rankBadge = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `#${idx + 1}`;
+        let streakBadge = p.streak > 1 ? `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold ml-2">🔥 ${p.streak}x streak</span>` : '';
+        return `
+          <div class="flex justify-between items-center bg-slate-800 p-3 rounded-xl border border-slate-700 text-lg">
+            <span class="font-bold flex items-center gap-2">
+              <span>${rankBadge}</span>
+              <span>${p.name}</span>
+              ${streakBadge}
+            </span>
+            <span class="text-yellow-400 font-black">${p.score || 0} pts</span>
+          </div>`;
+      }).join('');
     }
 
     function renderParticipantState() {

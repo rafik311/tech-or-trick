@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECH OR TRICK? 📱 - Tech Safety for Older Adults</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAhb-6kKDtpBuf1KHLsYtGdliPNuI_Folo",
+      authDomain: "tech-or-trick.firebaseapp.com",
+      databaseURL: "https://tech-or-trick-default-rtdb.firebaseio.com",
+      projectId: "tech-or-trick",
+      storageBucket: "tech-or-trick.firebasestorage.app",
+      messagingSenderId: "516932444485",
+      appId: "1:516932444485:web:61b86a923376002627de2c"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      touch-action: manipulation;
+    }
+    .btn-touch {
+      min-height: 4rem;
+      min-width: 4rem;
+      touch-action: manipulation;
+    }
+    .phone-mockup {
+      border: 12px solid #1f2937;
+      border-radius: 36px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      background-color: #f9fafb;
+      overflow: hidden;
+    }
+    .browser-mockup {
+      border: 4px solid #374151;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+    @keyframes highlight-pulse {
+      0%, 100% { background-color: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.8); }
+      50% { background-color: rgba(239, 68, 68, 0.5); border-color: rgba(239, 68, 68, 1); }
+    }
+    .highlight-danger {
+      animation: highlight-pulse 2s infinite;
+      border: 3px dashed #ef4444;
+      border-radius: 8px;
+      padding: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col justify-between">
+
+  <!-- TOP APP BAR -->
+  <header class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center px-6">
+    <div class="flex items-center space-x-3">
+      <span class="text-3xl">📱</span>
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-wide">TECH OR TRICK?</h1>
+    </div>
+    <div id="room-badge" class="hidden bg-blue-800 text-yellow-300 font-bold px-4 py-2 rounded-full text-lg border border-yellow-400">
+      ROOM: <span id="display-room-code">----</span>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow container mx-auto px-4 py-6 max-w-5xl flex flex-col justify-center">
+
+    <!-- SCREEN 1: LANDING -->
+    <section id="screen-landing" class="space-y-8 text-center py-8">
+      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-200 space-y-6">
+        <h2 class="text-3xl md:text-5xl font-black text-blue-950">Technology Safety Game</h2>
+        <p class="text-xl md:text-2xl text-slate-700 max-w-2xl mx-auto leading-relaxed">
+          Interactive health-promotion game for seniors.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 max-w-3xl mx-auto">
+          <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-300 flex flex-col justify-between items-center text-center space-y-4">
+            <div>
+              <span class="text-5xl">📢</span>
+              <h3 class="text-2xl font-bold text-blue-900 mt-2">Activity Leader</h3>
+              <p class="text-slate-600 mt-1">Project this on the classroom screen.</p>
+            </div>
+            <button onclick="initLeader()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
+              Create Game
+            </button>
+          </div>
+
+          <div class="bg-green-50 p-6 rounded-2xl border-2 border-green-300 flex flex-col justify-between items-center text-center space-y-4">
+            <div>
+              <span class="text-5xl">🙋‍♀️</span>
+              <h3 class="text-2xl font-bold text-green-900 mt-2">Participant</h3>
+              <p class="text-slate-600 mt-1">Join from your phone to answer questions.</p>
+            </div>
+            <button onclick="initParticipantJoin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
+              Join Game
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: LEADER LOBBY -->
+    <section id="screen-leader-lobby" class="hidden space-y-6 text-center">
+      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-200 space-y-6">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-blue-900">Scan QR Code to Join!</h2>
+        
+        <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-4">
+          <div class="bg-slate-50 p-6 rounded-2xl border-4 border-slate-300 flex flex-col items-center">
+            <div id="qrcode-container" class="bg-white p-4 rounded-xl border"></div>
+            <p class="mt-4 text-xl font-bold text-slate-700">Room Code: <span id="lobby-room-code" class="text-blue-600 text-2xl font-black">----</span></p>
+          </div>
+
+          <div class="w-full md:w-1/2 text-left bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 min-h-[260px] flex flex-col">
+            <h3 class="text-2xl font-bold text-slate-800 mb-4 flex justify-between items-center">
+              <span>Connected Players</span>
+              <span id="player-count" class="bg-blue-600 text-white px-3 py-1 rounded-full text-lg font-bold">0</span>
+            </h3>
+            <div id="player-list" class="flex-grow flex flex-wrap content-start gap-3 overflow-y-auto max-h-48 p-2">
+              <span class="text-slate-400 italic text-lg">Waiting for participants to join...</span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="startGame()" class="w-full md:w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-3xl py-6 rounded-2xl shadow-xl transition btn-touch">
+          Start Activity 🚀
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: PARTICIPANT JOIN -->
+    <section id="screen-participant-join" class="hidden max-w-md mx-auto space-y-6 text-center">
+      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-green-300 space-y-6">
+        <div class="text-6xl">👋</div>
+        <h2 class="text-3xl font-extrabold text-slate-900">Welcome!</h2>
+        <p class="text-xl text-slate-600">Please enter your name to begin.</p>
+
+        <form onsubmit="event.preventDefault(); joinGame();" class="space-y-5">
+          <div class="text-left">
+            <label class="block text-xl font-bold text-slate-800 mb-2">Room Code</label>
+            <input type="text" id="join-room-input" maxlength="4" placeholder="4-LETTER CODE" class="w-full p-4 text-2xl font-black tracking-widest text-center uppercase border-4 border-slate-300 rounded-2xl focus:border-blue-500 outline-none">
+          </div>
+
+          <div class="text-left">
+            <label class="block text-xl font-bold text-slate-800 mb-2">Your Name</label>
+            <input type="text" id="join-name-input" maxlength="15" placeholder="e.g. Grandma Rose" class="w-full p-4 text-2xl font-bold text-center border-4 border-slate-300 rounded-2xl focus:border-blue-500 outline-none">
+          </div>
+
+          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-black text-2xl py-5 rounded-2xl shadow-lg transition btn-touch">
+            Join Now ✨
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: PARTICIPANT WAITING -->
+    <section id="screen-participant-waiting" class="hidden text-center max-w-md mx-auto space-y-6">
+      <div class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-300 space-y-6">
+        <div class="animate-bounce text-6xl">⏳</div>
+        <h2 class="text-3xl font-extrabold text-blue-900">You are in!</h2>
+        <p class="text-2xl text-slate-700">Hello, <span id="waiting-player-name" class="font-bold text-blue-600">---</span></p>
+        <div class="p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
+          <p class="text-xl text-slate-800 font-semibold">Please look at the main screen. The activity leader will start shortly!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: GAMEPLAY CONTAINER -->
+    <section id="screen-gameplay" class="hidden space-y-6">
+      <div class="bg-white p-4 rounded-2xl shadow border-2 border-slate-200 flex justify-between items-center">
+        <div>
+          <span class="text-lg font-bold text-slate-500 uppercase tracking-wider block">Scenario</span>
+          <span id="scenario-progress-text" class="text-2xl font-black text-blue-950">1 of 6</span>
+        </div>
+        <div class="w-1/2 bg-slate-200 h-6 rounded-full overflow-hidden border border-slate-300">
+          <div id="progress-bar-fill" class="bg-blue-600 h-full transition-all duration-500" style="width: 16.6%;"></div>
+        </div>
+        <div id="leader-answer-counter" class="hidden text-right">
+          <span class="text-sm font-bold text-slate-500 uppercase block">Responses</span>
+          <span id="answers-received-count" class="text-2xl font-black text-green-600">0 / 0</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 md:p-8 rounded-3xl shadow-xl border-2 border-slate-300 min-h-[420px] flex flex-col justify-center items-center">
+        <div id="scenario-stage" class="w-full max-w-2xl mx-auto"></div>
+      </div>
+
+      <div id="leader-control-panel" class="hidden bg-slate-800 text-white p-4 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-xl font-bold">Leader Controls:</div>
+        <div class="flex gap-4 w-full md:w-auto">
+          <button id="btn-reveal-answer" onclick="revealAnswer()" class="flex-1 md:flex-none bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-black text-xl px-8 py-4 rounded-xl shadow transition btn-touch">
+            Reveal Answer 🔍
+          </button>
+          <button id="btn-next-scenario" onclick="nextScenario()" class="hidden flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-8 py-4 rounded-xl shadow transition btn-touch">
+            Next Scenario ➡️
+          </button>
+        </div>
+      </div>
+
+      <div id="participant-control-panel" class="hidden space-y-4">
+        <p id="participant-prompt-text" class="text-2xl font-black text-center text-slate-800">WHAT WOULD YOU DO?</p>
+        <div id="participant-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <div id="explanation-card" class="hidden bg-amber-50 p-6 md:p-8 rounded-3xl border-4 border-amber-400 space-y-4 shadow-xl">
+        <div class="flex items-center space-y-2 md:space-y-0 md:space-x-4 flex-col md:flex-row text-center md:text-left">
+          <span id="explanation-badge" class="text-4xl px-4 py-2 rounded-2xl font-black text-white bg-red-600">🔴 DANGER</span>
+          <h3 id="explanation-title" class="text-2xl md:text-3xl font-extrabold text-slate-900">Scam Warning Key Points</h3>
+        </div>
+        <p id="explanation-text" class="text-xl md:text-2xl text-slate-800 font-semibold leading-relaxed"></p>
+      </div>
+    </section>
+
+    <!-- SCREEN 6: SUMMARY -->
+    <section id="screen-summary" class="hidden space-y-8 text-center py-6">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl border-4 border-yellow-400 space-y-8">
+        <div class="space-y-2">
+          <div class="text-7xl animate-bounce">🎉</div>
+          <h2 class="text-3xl md:text-5xl font-black text-blue-950">TECHNOLOGY SAFETY CHAMPION!</h2>
+          <p class="text-2xl text-slate-600 font-bold">Great job completing all safety scenarios!</p>
+        </div>
+
+        <div class="max-w-xl mx-auto bg-slate-50 rounded-2xl p-6 border-2 border-slate-200">
+          <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center justify-center gap-2">
+            <span>🏆</span> Final Leaderboard
+          </h3>
+          <div id="final-leaderboard" class="space-y-3"></div>
+        </div>
+
+        <div class="bg-blue-900 text-white p-8 rounded-3xl space-y-6 text-left shadow-lg">
+          <h3 class="text-3xl font-black text-yellow-300 text-center tracking-wide">3 GOLDEN SAFETY RULES</h3>
+          <ul class="space-y-4 text-xl md:text-2xl font-bold">
+            <li class="flex items-start gap-4">
+              <span class="bg-yellow-400 text-blue-950 rounded-full w-10 h-10 flex items-center justify-center font-black shrink-0">1</span>
+              <span><strong class="text-yellow-300">STOP</strong> before clicking links or downloading attachments.</span>
+            </li>
+            <li class="flex items-start gap-4">
+              <span class="bg-yellow-400 text-blue-950 rounded-full w-10 h-10 flex items-center justify-center font-black shrink-0">2</span>
+              <span><strong class="text-yellow-300">NEVER</strong> share your personal passwords, PINs, or OTP codes with anyone.</span>
+            </li>
+            <li class="flex items-start gap-4">
+              <span class="bg-yellow-400 text-blue-950 rounded-full w-10 h-10 flex items-center justify-center font-black shrink-0">3</span>
+              <span><strong class="text-yellow-300">WHEN IN DOUBT</strong>, stop and ask a family member or trusted friend for help.</span>
+            </li>
+          </ul>
+        </div>
+
+        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-2xl px-10 py-5 rounded-2xl shadow-xl transition btn-touch">
+          Play Again 🔄
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-slate-800 text-slate-300 py-4 text-center text-base border-t border-slate-700">
+    <p>Tech or Trick? • Health Promotion Activity for Senior Safety</p>
+  </footer>
+
+  <script>
+    const SCENARIOS = [
+      {
+        id: 1,
+        title: "Suspicious Bank SMS",
+        type: "phone",
+        header: "Messages • Bank Alert",
+        prompt: "WHAT WOULD YOU DO?",
+        mockContent: `
+          <div class="space-y-4 p-2">
+            <div class="text-center text-xs text-slate-400 font-bold uppercase">Today 10:42 AM</div>
+            <div class="bg-slate-200 text-slate-900 p-4 rounded-2xl rounded-tl-none max-w-[85%] space-y-2 shadow-sm">
+              <p class="font-extrabold text-red-600 text-lg">YOUR BANK ALERT</p>
+              <p class="text-base leading-snug">URGENT: Your account will be suspended today due to irregular activity.</p>
+              <p class="text-base leading-snug">Please verify your account immediately:</p>
+              <p id="scen1-link" class="text-blue-600 underline font-bold break-all">www.bank-security-verify.com</p>
+            </div>
+          </div>
+        `,
+        options: [
+          { label: "🟢 SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "DANGER",
+        badge: "🔴 DANGER",
+        badgeBg: "bg-red-600",
+        explanationTitle: "Fake Bank Link Scam",
+        explanation: "Do not click suspicious links or provide your bank details or OTP. Banks will never ask you to verify accounts via random websites. When in doubt, call your bank using the official phone number printed on your bank card.",
+        onReveal: () => {
+          const link = document.getElementById('scen1-link');
+          if (link) link.classList.add('highlight-danger');
+        }
+      },
+      {
+        id: 2,
+        title: "Fake Shopping Website",
+        type: "browser",
+        header: "https://www.super-discount-store-cheap.xyz/iphone17-deal",
+        prompt: "Would you trust this website?",
+        mockContent: `
+          <div class="p-6 text-center space-y-4 bg-gradient-to-b from-yellow-50 to-white">
+            <div id="scen2-banner" class="bg-red-600 text-white font-black py-2 px-4 rounded-lg text-xl animate-pulse">
+              LIMITED OFFER!!! 90% OFF
+            </div>
+            <h4 class="text-3xl font-black text-slate-900">Brand New iPhone 17 Pro</h4>
+            <div class="flex justify-center items-baseline space-x-3">
+              <span class="text-4xl font-extrabold text-emerald-600">ONLY 2,999 THB</span>
+              <span class="text-xl text-slate-400 line-through">48,000 THB</span>
+            </div>
+            <div id="scen2-timer" class="inline-block bg-slate-900 text-yellow-400 font-mono text-2xl font-black px-6 py-2 rounded-xl">
+              TIME LEFT: 03:21
+            </div>
+            <p class="text-sm text-slate-500 italic">Seller: Unknown Direct Import Store</p>
+          </div>
+        `,
+        options: [
+          { label: "🟢 TRUST / SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "DANGER",
+        badge: "🔴 DANGER",
+        badgeBg: "bg-red-600",
+        explanationTitle: "Warning Signs of Fake Online Shops",
+        explanation: "Watch out for huge unrealistic discounts, unknown web addresses (like .xyz or strange spellings), urgent countdown timers creating fake panic, and unverified seller accounts.",
+        onReveal: () => {
+          const banner = document.getElementById('scen2-banner');
+          const timer = document.getElementById('scen2-timer');
+          if (banner) banner.classList.add('highlight-danger');
+          if (timer) timer.classList.add('highlight-danger');
+        }
+      },
+      {
+        id: 3,
+        title: "Fake Family Member Emergency",
+        type: "phone",
+        header: "LINE / WhatsApp Chat",
+        prompt: "What should you do?",
+        mockContent: `
+          <div class="space-y-3 p-2 bg-emerald-50/50 rounded-xl">
+            <div class="text-center text-xs text-slate-400 font-bold">11:15 AM</div>
+            <div class="bg-white text-slate-900 p-4 rounded-2xl rounded-tl-none max-w-[90%] shadow-md border space-y-2">
+              <p class="font-bold text-emerald-800">Unknown Contact Number</p>
+              <p class="text-lg">“Grandma, this is me! I lost my phone and this is my new temporary number.”</p>
+              <p class="text-lg font-bold text-red-600">“I urgently need 10,000 baht to pay for an emergency repair. Please transfer it to this account right now.”</p>
+            </div>
+          </div>
+        `,
+        options: [
+          { label: "🟢 Send the money immediately", type: "SAFE", color: "bg-blue-600 hover:bg-blue-700" },
+          { label: "🔴 Call family member on old number first", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "DANGER",
+        badge: "🔴 ALWAYS VERIFY FIRST",
+        badgeBg: "bg-red-600",
+        explanationTitle: "Impersonation Emergency Scam",
+        explanation: "Scammers often pretend to be grandchildren or relatives in trouble. ALWAYS stop and call the family member using their ORIGINAL saved phone number or ask another family member before transferring money.",
+        onReveal: null
+      },
+      {
+        id: 4,
+        title: "OTP Verification Scam",
+        type: "phone",
+        header: "Verification Code Screen",
+        prompt: "Should you give them the OTP code?",
+        mockContent: `
+          <div class="space-y-4 p-2 text-center">
+            <div class="bg-slate-200 p-4 rounded-2xl space-y-1">
+              <p class="text-xs text-slate-500 font-bold uppercase">SMS Message</p>
+              <p class="text-sm text-slate-700">Your secret login OTP verification code is:</p>
+              <p id="scen4-otp" class="text-4xl font-mono font-black text-blue-700 tracking-widest my-2">483921</p>
+              <p class="text-xs text-red-600 font-bold">Do not share this code with anyone.</p>
+            </div>
+            
+            <div class="bg-amber-100 border-2 border-amber-300 p-3 rounded-2xl text-left flex items-center space-x-3">
+              <span class="text-3xl">📞</span>
+              <div>
+                <p class="font-bold text-amber-900">Incoming Caller Says:</p>
+                <p class="text-sm text-amber-800 font-medium">"Hello, I am support staff. Please read me the 6-digit OTP code sent to your phone to confirm your account."</p>
+              </div>
+            </div>
+          </div>
+        `,
+        options: [
+          { label: "🟢 Give the OTP code", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 DANGER: Keep Code Secret", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "DANGER",
+        badge: "🔴 DANGER",
+        badgeBg: "bg-red-600",
+        explanationTitle: "Never Share Your OTP",
+        explanation: "Your OTP (One-Time Password) is like the key to your safe. Bank staff, police, and legitimate companies will NEVER ask you for your OTP over the phone or in chat.",
+        onReveal: () => {
+          const otp = document.getElementById('scen4-otp');
+          if (otp) otp.classList.add('highlight-danger');
+        }
+      },
+      {
+        id: 5,
+        title: "Official Device System Update",
+        type: "phone",
+        header: "Settings • General",
+        prompt: "Is this action generally safe?",
+        mockContent: `
+          <div class="p-4 bg-white rounded-xl space-y-4">
+            <div class="flex items-center space-x-3 border-b pb-3">
+              <div class="bg-slate-800 text-white p-2 rounded-xl text-xl">⚙️</div>
+              <div>
+                <h4 class="font-bold text-xl text-slate-900">Software Update</h4>
+                <p class="text-xs text-slate-500">Official System OS 18.2</p>
+              </div>
+            </div>
+            <div class="space-y-2 text-slate-700 text-base">
+              <p class="font-semibold">Features & Security Improvements:</p>
+              <ul class="list-disc list-inside text-sm space-y-1 text-slate-600">
+                <li>Fixes security vulnerabilities</li>
+                <li>Downloaded directly from official settings</li>
+              </ul>
+            </div>
+            <div class="bg-slate-100 p-3 rounded-xl text-center font-bold text-blue-600">
+              Update Installed from Settings Menu
+            </div>
+          </div>
+        `,
+        options: [
+          { label: "🟢 SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "SAFE",
+        badge: "🟢 SAFE",
+        badgeBg: "bg-emerald-600",
+        explanationTitle: "Safe System Updates",
+        explanation: "Updating your phone through the official built-in Settings app is safe and recommended to protect your device. Avoid downloading updates from pop-up ads or web links.",
+        onReveal: null
+      },
+      {
+        id: 6,
+        title: "Prize Scam with Fee Demand",
+        type: "phone",
+        header: "SMS Notification",
+        prompt: "WHAT WOULD YOU DO?",
+        mockContent: `
+          <div class="space-y-4 p-2">
+            <div class="bg-yellow-100 border-2 border-yellow-400 p-4 rounded-2xl text-slate-900 space-y-3 shadow-md">
+              <p class="text-2xl font-black text-amber-800 text-center">🎉 CONGRATULATIONS!!!</p>
+              <p class="text-lg font-bold text-center text-slate-800">You won 50,000 THB in our lucky draw!</p>
+              <hr class="border-yellow-300">
+              <p class="text-base text-slate-700 leading-snug">To claim your cash prize, please transfer a <strong class="text-red-600">2,000 THB processing fee</strong> to account 123-4-56789 within 1 hour.</p>
+            </div>
+          </div>
+        `,
+        options: [
+          { label: "🟢 SAFE: Pay fee & get prize", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
+          { label: "🔴 DANGER: Scam Alert", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+        ],
+        correct: "DANGER",
+        badge: "🔴 DANGER",
+        badgeBg: "bg-red-600",
+        explanationTitle: "Upfront Fee Prize Scam",
+        explanation: "Unexpected lottery wins or prizes that require you to pay money first to receive your reward are ALWAYS scams. Real prizes will never require upfront money transfers.",
+        onReveal: null
+      }
+    ];
+
+    let state = {
+      role: null,
+      roomCode: '',
+      playerName: '',
+      players: [],
+      currentScenarioIdx: 0,
+      answers: {},
+      isRevealed: false
+    };
+
+    function generateRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let code = '';
+      for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      return code;
+    }
+
+    function showScreen(screenId) {
+      ['screen-landing','screen-leader-lobby','screen-participant-join','screen-participant-waiting','screen-gameplay','screen-summary']
+        .forEach(id => document.getElementById(id)?.classList.add('hidden'));
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    /* FIREBASE REALTIME LISTENERS */
+    function listenToRoom() {
+      const roomRef = db.ref('rooms/' + state.roomCode);
+
+      // Listen for players joining
+      roomRef.child('players').on('value', snapshot => {
+        const val = snapshot.val() || {};
+        state.players = Object.values(val);
+        if (state.role === 'leader') updateLeaderLobbyUI();
+      });
+
+      // Listen for game state updates
+      roomRef.child('gameState').on('value', snapshot => {
+        const gs = snapshot.val();
+        if (!gs) return;
+
+        state.currentScenarioIdx = gs.currentScenarioIdx;
+        state.isRevealed = gs.isRevealed;
+
+        if (state.role === 'participant') {
+          if (gs.status === 'PLAYING') {
+            showScreen('screen-gameplay');
+            // Listen specifically to player's current scenario answer from database
+            listenToCurrentScenarioAnswers();
+          } else if (gs.status === 'ENDED') {
+            showScreen('screen-summary');
+            renderFinalSummary();
+          }
+        }
+      });
+    }
+
+    function listenToCurrentScenarioAnswers() {
+      db.ref(`rooms/${state.roomCode}/answers/${state.currentScenarioIdx}`).on('value', snapshot => {
+        state.answers = snapshot.val() || {};
+        if (state.role === 'leader') {
+          updateLeaderAnswerCount();
+        } else {
+          renderParticipantState();
+        }
+      });
+    }
+
+    /* LEADER LOGIC */
+    function initLeader() {
+      state.role = 'leader';
+      state.roomCode = generateRoomCode();
+      state.players = [];
+
+      document.getElementById('room-badge').classList.remove('hidden');
+      document.getElementById('display-room-code').innerText = state.roomCode;
+      document.getElementById('lobby-room-code').innerText = state.roomCode;
+
+      // Set initial room data in cloud
+      db.ref('rooms/' + state.roomCode).set({
+        gameState: { status: 'LOBBY', currentScenarioIdx: 0, isRevealed: false }
+      });
+
+      const qrContainer = document.getElementById('qrcode-container');
+      qrContainer.innerHTML = '';
+      const joinUrl = window.location.href.split('?')[0] + '?room=' + state.roomCode;
+      new QRCode(qrContainer, { text: joinUrl, width: 180, height: 180 });
+
+      showScreen('screen-leader-lobby');
+      listenToRoom();
+    }
+
+    function updateLeaderLobbyUI() {
+      document.getElementById('player-count').innerText = state.players.length;
+      const listContainer = document.getElementById('player-list');
+      if (state.players.length === 0) {
+        listContainer.innerHTML = `<span class="text-slate-400 italic text-lg">Waiting for participants to scan QR code...</span>`;
+        return;
+      }
+      listContainer.innerHTML = state.players.map(p => `
+        <span class="bg-blue-100 text-blue-900 border-2 border-blue-300 px-4 py-2 rounded-2xl text-xl font-bold flex items-center gap-2 shadow-sm">
+          👤 ${p.name}
+        </span>
+      `).join('');
+    }
+
+    function startGame() {
+      db.ref('rooms/' + state.roomCode + '/gameState').update({
+        status: 'PLAYING',
+        currentScenarioIdx: 0,
+        isRevealed: false
+      });
+      showScreen('screen-gameplay');
+      listenToCurrentScenarioAnswers();
+      setupScenarioUI();
+    }
+
+    /* PARTICIPANT LOGIC */
+    function initParticipantJoin() {
+      state.role = 'participant';
+      showScreen('screen-participant-join');
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('room')) {
+        document.getElementById('join-room-input').value = urlParams.get('room').toUpperCase();
+      }
+    }
+
+    function joinGame() {
+      const roomInput = document.getElementById('join-room-input').value.trim().toUpperCase();
+      const nameInput = document.getElementById('join-name-input').value.trim();
+      if (!roomInput || !nameInput) return alert("Please enter both Room Code and Name.");
+
+      state.roomCode = roomInput;
+      state.playerName = nameInput;
+
+      document.getElementById('room-badge').classList.remove('hidden');
+      document.getElementById('display-room-code').innerText = state.roomCode;
+      document.getElementById('waiting-player-name').innerText = state.playerName;
+
+      // Register player in Cloud Database
+      db.ref(`rooms/${state.roomCode}/players/${state.playerName}`).set({
+        name: state.playerName,
+        score: 0
+      });
+
+      listenToRoom();
+      showScreen('screen-participant-waiting');
+    }
+
+    /* SCENARIO & ANSWER LOGIC */
+    function setupScenarioUI() {
+      const scenario = SCENARIOS[state.currentScenarioIdx];
+
+      document.getElementById('scenario-progress-text').innerText = `${state.currentScenarioIdx + 1} of ${SCENARIOS.length}`;
+      document.getElementById('progress-bar-fill').style.width = `${((state.currentScenarioIdx + 1) / SCENARIOS.length) * 100}%`;
+      document.getElementById('explanation-card').classList.add('hidden');
+
+      if (state.role === 'leader') {
+        document.getElementById('leader-control-panel').classList.remove('hidden');
+        document.getElementById('participant-control-panel').classList.add('hidden');
+        document.getElementById('leader-answer-counter').classList.remove('hidden');
+        document.getElementById('btn-reveal-answer').classList.remove('hidden');
+        document.getElementById('btn-next-scenario').classList.add('hidden');
+        updateLeaderAnswerCount();
+      } else {
+        document.getElementById('leader-control-panel').classList.add('hidden');
+        document.getElementById('participant-control-panel').classList.remove('hidden');
+        document.getElementById('leader-answer-counter').classList.add('hidden');
+        renderParticipantOptions(scenario);
+      }
+
+      const stage = document.getElementById('scenario-stage');
+      if (scenario.type === 'phone') {
+        stage.innerHTML = `
+          <div class="phone-mockup max-w-sm mx-auto">
+            <div class="bg-slate-800 h-6 flex justify-center items-center"><div class="w-16 h-3 bg-slate-900 rounded-full"></div></div>
+            <div class="bg-slate-200 px-4 py-3 border-b border-slate-300 font-bold text-slate-700 text-center text-lg flex justify-between items-center">
+              <span>💬</span><span>${scenario.header}</span><span>🔋</span>
+            </div>
+            <div class="p-4 bg-slate-50 min-h-[220px]">${scenario.mockContent}</div>
+          </div>`;
+      } else {
+        stage.innerHTML = `
+          <div class="browser-mockup max-w-xl mx-auto">
+            <div class="bg-slate-200 px-4 py-2 border-b border-slate-300 flex items-center space-x-2">
+              <div class="flex space-x-1">
+                <span class="w-3 h-3 bg-red-500 rounded-full inline-block"></span>
+                <span class="w-3 h-3 bg-yellow-500 rounded-full inline-block"></span>
+                <span class="w-3 h-3 bg-green-500 rounded-full inline-block"></span>
+              </div>
+              <div class="bg-white text-xs md:text-sm font-mono text-slate-600 px-3 py-1 rounded-md flex-grow truncate border border-slate-300">
+                🔒 ${scenario.header}
+              </div>
+            </div>
+            <div class="bg-white">${scenario.mockContent}</div>
+          </div>`;
+      }
+    }
+
+    function renderParticipantOptions(scenario) {
+      const container = document.getElementById('participant-options-container');
+      document.getElementById('participant-prompt-text').innerText = scenario.prompt;
+
+      const hasAnswered = Boolean(state.answers[state.playerName]);
+
+      if (hasAnswered || state.isRevealed) {
+        container.innerHTML = `
+          <div class="col-span-full bg-blue-50 border-4 border-blue-300 p-6 rounded-2xl text-center space-y-2">
+            <span class="text-4xl">🔒</span>
+            <p class="text-2xl font-black text-blue-900">
+              ${hasAnswered ? "Answer Submitted!" : "Time's Up!"}
+            </p>
+            <p class="text-xl text-slate-700">Look at the main screen for the explanation!</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = scenario.options.map(opt => `
+        <button onclick="submitParticipantAnswer('${opt.type}')" class="w-full ${opt.color} text-white font-black text-2xl py-6 rounded-2xl shadow-xl transition active:scale-95 btn-touch">
+          ${opt.label}
+        </button>
+      `).join('');
+    }
+
+    function submitParticipantAnswer(optionType) {
+      if (state.answers[state.playerName] || state.isRevealed) return;
+
+      db.ref(`rooms/${state.roomCode}/answers/${state.currentScenarioIdx}/${state.playerName}`).set(optionType);
+    }
+
+    function updateLeaderAnswerCount() {
+      const ansCount = Object.keys(state.answers).length;
+      document.getElementById('answers-received-count').innerText = `${ansCount} / ${state.players.length}`;
+    }
+
+    function revealAnswer() {
+      state.isRevealed = true;
+      const scenario = SCENARIOS[state.currentScenarioIdx];
+
+      if (state.role === 'leader') {
+        db.ref(`rooms/${state.roomCode}/gameState`).update({ isRevealed: true });
+
+        // Calculate scores in database
+        state.players.forEach(p => {
+          if (state.answers[p.name] === scenario.correct) {
+            db.ref(`rooms/${state.roomCode}/players/${p.name}/score`).transaction(s => (s || 0) + 100);
+          }
+        });
+      }
+
+      if (typeof scenario.onReveal === 'function') scenario.onReveal();
+
+      const expCard = document.getElementById('explanation-card');
+      document.getElementById('explanation-badge').innerText = scenario.badge;
+      document.getElementById('explanation-badge').className = `text-3xl px-4 py-2 rounded-2xl font-black text-white ${scenario.badgeBg}`;
+      document.getElementById('explanation-title').innerText = scenario.explanationTitle;
+      document.getElementById('explanation-text').innerText = scenario.explanation;
+      expCard.classList.remove('hidden');
+
+      if (state.role === 'leader') {
+        document.getElementById('btn-reveal-answer').classList.add('hidden');
+        document.getElementById('btn-next-scenario').classList.remove('hidden');
+      } else {
+        renderParticipantOptions(scenario);
+      }
+    }
+
+    function renderParticipantState() {
+      setupScenarioUI();
+      if (state.isRevealed) revealAnswer();
+    }
+
+    function nextScenario() {
+      if (state.currentScenarioIdx < SCENARIOS.length - 1) {
+        state.currentScenarioIdx++;
+        db.ref(`rooms/${state.roomCode}/gameState`).update({
+          currentScenarioIdx: state.currentScenarioIdx,
+          isRevealed: false
+        });
+        listenToCurrentScenarioAnswers();
+        setupScenarioUI();
+      } else {
+        db.ref(`rooms/${state.roomCode}/gameState`).update({ status: 'ENDED' });
+        showScreen('screen-summary');
+        renderFinalSummary();
+      }
+    }
+
+    function renderFinalSummary() {
+      try { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } }); } catch(e) {}
+      const sorted = [...state.players].sort((a,b) => (b.score || 0) - (a.score || 0));
+
+      document.getElementById('final-leaderboard').innerHTML = sorted.map((p, idx) => {
+        let medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⭐";
+        return `
+          <div class="flex justify-between items-center bg-white p-4 rounded-xl border-2 border-slate-200 text-xl font-bold">
+            <span class="flex items-center gap-3"><span class="text-2xl">${medal}</span><span>${p.name}</span></span>
+            <span class="text-blue-600 font-black">${p.score || 0} pts</span>
+          </div>`;
+      }).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (new URLSearchParams(window.location.search).has('room')) initParticipantJoin();
+    });
+  </script>
+</body>
+</html>

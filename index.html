@@ -33,17 +33,63 @@
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       touch-action: manipulation;
+      overflow-x: hidden;
     }
     
+    /* Interactive Button Press Effects & Transitions */
     .btn-touch {
       min-height: 3.8rem;
       touch-action: manipulation;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-touch:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-touch:active {
+      transform: translateY(1px) scale(0.97) !important;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
     }
 
     .app-card {
       background: #ffffff;
       border: 2px solid #e2e8f0;
       box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.01);
+      transition: all 0.3s ease;
+    }
+
+    /* Screen Animated Transitions */
+    .screen-fade-enter {
+      animation: screenFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes screenFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.99);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Animated Card Slide-In for Explanations */
+    .card-pop-enter {
+      animation: cardPopIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes cardPopIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     /* Device Simulations */
@@ -53,6 +99,7 @@
       box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
       background-color: #f8fafc;
       overflow: hidden;
+      transition: transform 0.3s ease;
     }
 
     .browser-mockup {
@@ -61,6 +108,7 @@
       box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
       overflow: hidden;
       background-color: #ffffff;
+      transition: transform 0.3s ease;
     }
 
     /* Highlighting for Danger Elements */
@@ -82,7 +130,7 @@
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
-        <div class="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center">
+        <div class="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center transition-transform hover:scale-105">
           <span class="text-2xl">🛡️</span>
         </div>
         <div>
@@ -90,7 +138,7 @@
           <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider hidden sm:block">Digital Safety Simulator</p>
         </div>
       </div>
-      <div id="room-badge" class="hidden bg-slate-100 text-slate-800 font-mono font-black px-4 py-2 rounded-xl text-base border border-slate-300 shadow-inner">
+      <div id="room-badge" class="hidden bg-slate-100 text-slate-800 font-mono font-black px-4 py-2 rounded-xl text-base border border-slate-300 shadow-inner transition-all">
         ROOM: <span id="display-room-code" class="text-indigo-600 tracking-widest">----</span>
       </div>
     </div>
@@ -100,10 +148,10 @@
   <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 flex flex-col justify-center">
 
     <!-- 1. LANDING -->
-    <section id="screen-landing" class="space-y-8 text-center py-4">
+    <section id="screen-landing" class="space-y-8 text-center py-4 screen-fade-enter">
       <div class="app-card p-8 md:p-12 rounded-3xl space-y-8">
         <div class="max-w-2xl mx-auto space-y-3">
-          <span class="bg-indigo-50 text-indigo-700 text-xs font-black px-4 py-2 rounded-full border border-indigo-200 uppercase tracking-widest">Interactive Workshop</span>
+          <span class="bg-indigo-50 text-indigo-700 text-xs font-black px-4 py-2 rounded-full border border-indigo-200 uppercase tracking-widest inline-block transition-transform hover:scale-105">Interactive Workshop</span>
           <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">Spot the Threat. Stay Secure.</h2>
           <p class="text-base md:text-lg text-slate-600 font-medium leading-relaxed">
             Test your ability to spot real digital scams, fraudulent websites, and security alerts in a safe guided session.
@@ -111,24 +159,24 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto pt-2">
-          <div class="bg-gradient-to-b from-indigo-50/50 to-white p-8 rounded-2xl border-2 border-indigo-100 flex flex-col justify-between items-center text-center space-y-6 hover:border-indigo-300 transition">
+          <div class="bg-gradient-to-b from-indigo-50/50 to-white p-8 rounded-2xl border-2 border-indigo-100 flex flex-col justify-between items-center text-center space-y-6 hover:border-indigo-300 transition-all hover:shadow-lg hover:-translate-y-1">
             <div class="space-y-3">
-              <span class="text-6xl">📺</span>
+              <span class="text-6xl inline-block transition-transform hover:scale-110">📺</span>
               <h3 class="text-2xl font-black text-slate-900">Host Screen</h3>
               <p class="text-slate-600 text-sm font-medium">For presenters. Displays room QR code and main scenario screen.</p>
             </div>
-            <button onclick="initLeader()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition btn-touch">
+            <button onclick="initLeader()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-black text-lg py-4 rounded-xl shadow-md transition btn-touch">
               Host Game Session 🚀
             </button>
           </div>
 
-          <div class="bg-gradient-to-b from-emerald-50/50 to-white p-8 rounded-2xl border-2 border-emerald-100 flex flex-col justify-between items-center text-center space-y-6 hover:border-emerald-300 transition">
+          <div class="bg-gradient-to-b from-emerald-50/50 to-white p-8 rounded-2xl border-2 border-emerald-100 flex flex-col justify-between items-center text-center space-y-6 hover:border-emerald-300 transition-all hover:shadow-lg hover:-translate-y-1">
             <div class="space-y-3">
-              <span class="text-6xl">📱</span>
+              <span class="text-6xl inline-block transition-transform hover:scale-110">📱</span>
               <h3 class="text-2xl font-black text-slate-900">Player Device</h3>
               <p class="text-slate-600 text-sm font-medium">Join from a smartphone or tablet to answer questions in real time.</p>
             </div>
-            <button onclick="initParticipantJoin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition btn-touch">
+            <button onclick="initParticipantJoin()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-lg py-4 rounded-xl shadow-md transition btn-touch">
               Join Session ✨
             </button>
           </div>
@@ -142,7 +190,7 @@
         <h2 class="text-3xl font-black text-slate-900">Scan QR Code to Join!</h2>
         
         <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-2">
-          <div class="bg-white p-6 rounded-2xl border-2 border-slate-200 shadow-md flex flex-col items-center">
+          <div class="bg-white p-6 rounded-2xl border-2 border-slate-200 shadow-md flex flex-col items-center hover:shadow-lg transition">
             <div id="qrcode-container" class="p-2"></div>
             <p class="mt-4 text-slate-700 font-extrabold text-lg">Room Code: <span id="lobby-room-code" class="text-indigo-600 font-mono text-3xl font-black">----</span></p>
           </div>
@@ -150,7 +198,7 @@
           <div class="w-full md:w-1/2 text-left bg-slate-50 p-6 rounded-2xl border border-slate-200 min-h-[260px] flex flex-col">
             <h3 class="text-lg font-black text-slate-800 mb-4 flex justify-between items-center">
               <span>Connected Participants</span>
-              <span id="player-count" class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-black">0</span>
+              <span id="player-count" class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-black transition-transform">0</span>
             </h3>
             <div id="player-list" class="flex-grow flex flex-wrap content-start gap-2 overflow-y-auto max-h-48 p-1">
               <span class="text-slate-400 italic text-sm">Waiting for players to scan or enter code...</span>
@@ -158,7 +206,7 @@
           </div>
         </div>
 
-        <button onclick="startGame()" class="w-full md:w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xl py-4 rounded-xl shadow-md transition btn-touch">
+        <button onclick="startGame()" class="w-full md:w-2/3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-xl py-4 rounded-xl shadow-md transition btn-touch">
           Start Game Session 🚀
         </button>
       </div>
@@ -167,22 +215,22 @@
     <!-- 3. PARTICIPANT JOIN -->
     <section id="screen-participant-join" class="hidden max-w-md mx-auto space-y-6 text-center w-full">
       <div class="app-card p-8 rounded-3xl space-y-6">
-        <div class="text-5xl">👋</div>
+        <div class="text-5xl inline-block transition-transform hover:rotate-12">👋</div>
         <h2 class="text-3xl font-black text-slate-900">Join Room</h2>
         <p class="text-slate-600 text-sm font-medium">Enter your details to join the live session.</p>
 
         <form onsubmit="event.preventDefault(); joinGame();" class="space-y-4">
           <div class="text-left">
             <label class="block text-xs font-extrabold text-slate-600 uppercase tracking-wider mb-1">Room Code</label>
-            <input type="text" id="join-room-input" maxlength="4" placeholder="4-LETTER CODE" class="w-full p-4 text-2xl font-mono font-black tracking-widest text-center uppercase bg-slate-50 text-indigo-600 border-2 border-slate-200 rounded-xl focus:border-indigo-600 outline-none">
+            <input type="text" id="join-room-input" maxlength="4" placeholder="4-LETTER CODE" class="w-full p-4 text-2xl font-mono font-black tracking-widest text-center uppercase bg-slate-50 text-indigo-600 border-2 border-slate-200 rounded-xl focus:border-indigo-600 focus:bg-white outline-none transition-all">
           </div>
 
           <div class="text-left">
             <label class="block text-xs font-extrabold text-slate-600 uppercase tracking-wider mb-1">Your Name</label>
-            <input type="text" id="join-name-input" maxlength="15" placeholder="Enter your name" class="w-full p-4 text-xl font-bold text-center bg-slate-50 text-slate-900 border-2 border-slate-200 rounded-xl focus:border-indigo-600 outline-none">
+            <input type="text" id="join-name-input" maxlength="15" placeholder="Enter your name" class="w-full p-4 text-xl font-bold text-center bg-slate-50 text-slate-900 border-2 border-slate-200 rounded-xl focus:border-indigo-600 focus:bg-white outline-none transition-all">
           </div>
 
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xl py-4 rounded-xl shadow-md transition btn-touch mt-2">
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-xl py-4 rounded-xl shadow-md transition btn-touch mt-2">
             Enter Room ✨
           </button>
         </form>
@@ -192,10 +240,10 @@
     <!-- 4. PARTICIPANT WAITING -->
     <section id="screen-participant-waiting" class="hidden text-center max-w-md mx-auto space-y-6 w-full">
       <div class="app-card p-8 rounded-3xl space-y-6">
-        <div class="animate-bounce text-6xl">⏳</div>
+        <div class="animate-bounce text-6xl inline-block">⏳</div>
         <h2 class="text-3xl font-black text-slate-900">Ready to Play!</h2>
         <p class="text-lg text-slate-600 font-medium">Player: <span id="waiting-player-name" class="font-bold text-indigo-600">---</span></p>
-        <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+        <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100 transition-all">
           <p class="text-sm text-indigo-900 font-semibold">Look at the host screen. The session will start shortly!</p>
         </div>
       </div>
@@ -209,29 +257,29 @@
           <span id="scenario-progress-text" class="text-2xl font-black text-slate-900">1 of 6</span>
         </div>
         <div class="w-1/3 bg-slate-100 h-3.5 rounded-full overflow-hidden border border-slate-200">
-          <div id="progress-bar-fill" class="bg-indigo-600 h-full transition-all duration-500" style="width: 16.6%;"></div>
+          <div id="progress-bar-fill" class="bg-indigo-600 h-full transition-all duration-500 ease-out" style="width: 16.6%;"></div>
         </div>
         <div id="leader-answer-counter" class="hidden text-right">
           <span class="text-xs font-bold text-slate-400 uppercase block">Responses</span>
-          <span id="answers-received-count" class="text-2xl font-black text-emerald-600">0 / 0</span>
+          <span id="answers-received-count" class="text-2xl font-black text-emerald-600 transition-all">0 / 0</span>
         </div>
         <div id="participant-streak-badge" class="hidden text-right">
           <span class="text-xs font-bold text-slate-400 uppercase block">Streak</span>
-          <span id="player-streak-text" class="text-2xl font-black text-amber-500">🔥 0</span>
+          <span id="player-streak-text" class="text-2xl font-black text-amber-500 transition-all">🔥 0</span>
         </div>
       </div>
 
-      <div class="app-card p-4 md:p-8 rounded-3xl min-h-[420px] flex flex-col justify-center items-center">
-        <div id="scenario-stage" class="w-full max-w-2xl mx-auto"></div>
+      <div class="app-card p-4 md:p-8 rounded-3xl min-h-[420px] flex flex-col justify-center items-center overflow-hidden">
+        <div id="scenario-stage" class="w-full max-w-2xl mx-auto transition-all"></div>
       </div>
 
-      <div id="leader-control-panel" class="hidden bg-slate-900 text-white p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
+      <div id="leader-control-panel" class="hidden bg-slate-900 text-white p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg transition-all">
         <div class="text-base font-bold text-slate-300">Host Controls:</div>
         <div class="flex gap-4 w-full md:w-auto">
-          <button id="btn-reveal-answer" onclick="revealAnswer()" class="flex-1 md:flex-none bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg px-8 py-3 rounded-xl transition btn-touch">
+          <button id="btn-reveal-answer" onclick="revealAnswer()" class="flex-1 md:flex-none bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-slate-950 font-black text-lg px-8 py-3 rounded-xl transition btn-touch">
             Reveal Answer 🔍
           </button>
-          <button id="btn-next-scenario" onclick="nextScenario()" class="hidden flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg px-8 py-3 rounded-xl transition btn-touch">
+          <button id="btn-next-scenario" onclick="nextScenario()" class="hidden flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-lg px-8 py-3 rounded-xl transition btn-touch">
             Next Scenario ➡️
           </button>
         </div>
@@ -244,15 +292,15 @@
 
       <!-- EXPLANATION & STANDINGS -->
       <div id="explanation-card" class="hidden space-y-6">
-        <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-indigo-200 shadow-lg space-y-4">
+        <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-indigo-200 shadow-lg space-y-4 card-pop-enter">
           <div class="flex items-center space-y-2 md:space-y-0 md:space-x-4 flex-col md:flex-row text-center md:text-left">
-            <span id="explanation-badge" class="text-lg px-4 py-1.5 rounded-xl font-black text-white bg-red-600 shadow">🔴 DANGER</span>
+            <span id="explanation-badge" class="text-lg px-4 py-1.5 rounded-xl font-black text-white bg-red-600 shadow transition-all">🔴 DANGER</span>
             <h3 id="explanation-title" class="text-2xl font-black text-slate-900">Scam Warning Key Points</h3>
           </div>
           <p id="explanation-text" class="text-base md:text-lg text-slate-700 font-medium leading-relaxed"></p>
         </div>
 
-        <div class="app-card p-6 rounded-3xl space-y-4">
+        <div class="app-card p-6 rounded-3xl space-y-4 card-pop-enter">
           <h3 class="text-lg font-black text-slate-900 text-center flex items-center justify-center gap-2">
             <span>🏆</span> LIVE LEADERBOARD
           </h3>
@@ -265,37 +313,37 @@
     <section id="screen-summary" class="hidden space-y-8 text-center py-4">
       <div class="app-card p-8 md:p-12 rounded-3xl space-y-8">
         <div class="space-y-2">
-          <div class="text-6xl animate-bounce">🎉</div>
+          <div class="text-6xl animate-bounce inline-block">🎉</div>
           <h2 class="text-3xl md:text-5xl font-black text-slate-900">Session Complete!</h2>
           <p class="text-slate-600 text-base font-medium">Great job evaluating these digital scenarios.</p>
         </div>
 
-        <div class="max-w-xl mx-auto bg-slate-50 rounded-2xl p-6 border border-slate-200">
+        <div class="max-w-xl mx-auto bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-inner">
           <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center justify-center gap-2">
             <span>🏆</span> Final Leaderboard Standings
           </h3>
           <div id="final-leaderboard" class="space-y-2"></div>
         </div>
 
-        <div class="bg-indigo-50/70 p-6 md:p-8 rounded-2xl space-y-6 text-left border border-indigo-100">
+        <div class="bg-indigo-50/70 p-6 md:p-8 rounded-2xl space-y-6 text-left border border-indigo-100 hover:shadow-md transition">
           <h3 class="text-xl font-black text-indigo-900 text-center uppercase tracking-wide">3 Golden Rules for Digital Safety</h3>
           <ul class="space-y-4 text-base md:text-lg text-slate-800 font-medium">
             <li class="flex items-start gap-3">
-              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm">1</span>
+              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm shadow">1</span>
               <span><strong class="text-slate-900 font-bold">STOP</strong> before clicking unknown links or opening attachments.</span>
             </li>
             <li class="flex items-start gap-3">
-              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm">2</span>
+              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm shadow">2</span>
               <span><strong class="text-slate-900 font-bold">NEVER</strong> give out OTP codes, PINs, or sensitive banking details over the phone.</span>
             </li>
             <li class="flex items-start gap-3">
-              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm">3</span>
+              <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-black shrink-0 text-sm shadow">3</span>
               <span><strong class="text-slate-900 font-bold">VERIFY</strong> suspicious messages by calling official contact numbers directly.</span>
             </li>
           </ul>
         </div>
 
-        <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg px-10 py-4 rounded-xl shadow-md transition btn-touch">
+        <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-black text-lg px-10 py-4 rounded-xl shadow-md transition btn-touch">
           Restart Game Session 🔄
         </button>
       </div>
@@ -336,8 +384,8 @@
           </div>
         `,
         options: [
-          { label: "🟢 SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800" },
+          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700 active:bg-red-800" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
@@ -374,8 +422,8 @@
           </div>
         `,
         options: [
-          { label: "🟢 SAFE TO BUY", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 FAKE SHOP / DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 SAFE TO BUY", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800" },
+          { label: "🔴 FAKE SHOP / DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700 active:bg-red-800" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
@@ -407,8 +455,8 @@
           </div>
         `,
         options: [
-          { label: "🟢 Transfer money immediately", type: "SAFE", color: "bg-indigo-600 hover:bg-indigo-700" },
-          { label: "🔴 Call old contact number first", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 Transfer money immediately", type: "SAFE", color: "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800" },
+          { label: "🔴 Call old contact number first", type: "DANGER", color: "bg-red-600 hover:bg-red-700 active:bg-red-800" }
         ],
         correct: "DANGER",
         badge: "🔴 VERIFY IDENTITY FIRST",
@@ -442,8 +490,8 @@
           </div>
         `,
         options: [
-          { label: "🟢 Share code with agent", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 DANGER: Keep Code Secret", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 Share code with agent", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800" },
+          { label: "🔴 DANGER: Keep Code Secret", type: "DANGER", color: "bg-red-600 hover:bg-red-700 active:bg-red-800" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
@@ -483,8 +531,8 @@
           </div>
         `,
         options: [
-          { label: "🟢 SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 SAFE", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800" },
+          { label: "🔴 DANGER", type: "DANGER", color: "bg-red-600 hover:bg-red-700 active:bg-red-800" }
         ],
         correct: "SAFE",
         badge: "🟢 SAFE",
@@ -513,8 +561,8 @@
           </div>
         `,
         options: [
-          { label: "🟢 Pay fee to receive prize", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700" },
-          { label: "🔴 DANGER: Upfront Fee Scam", type: "DANGER", color: "bg-red-600 hover:bg-red-700" }
+          { label: "🟢 Pay fee to receive prize", type: "SAFE", color: "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800" },
+          { label: "🔴 DANGER: Upfront Fee Scam", type: "DANGER", color: "bg-red-600 hover:bg-red-700 active:bg-red-800" }
         ],
         correct: "DANGER",
         badge: "🔴 DANGER",
@@ -544,8 +592,21 @@
 
     function showScreen(screenId) {
       ['screen-landing','screen-leader-lobby','screen-participant-join','screen-participant-waiting','screen-gameplay','screen-summary']
-        .forEach(id => document.getElementById(id)?.classList.add('hidden'));
-      document.getElementById(screenId).classList.remove('hidden');
+        .forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.add('hidden');
+            el.classList.remove('screen-fade-enter');
+          }
+        });
+      
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.remove('hidden');
+        // Trigger smooth reflow animation
+        void target.offsetWidth;
+        target.classList.add('screen-fade-enter');
+      }
     }
 
     /* FIREBASE REALTIME LISTENERS */
@@ -627,7 +688,7 @@
         return;
       }
       listContainer.innerHTML = state.players.map(p => `
-        <span class="bg-white text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl text-sm font-bold shadow-sm flex items-center gap-1.5">
+        <span class="bg-white text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl text-sm font-bold shadow-sm flex items-center gap-1.5 transition-transform hover:scale-105">
           👤 ${p.name}
         </span>
       `).join('');
@@ -703,7 +764,7 @@
       const stage = document.getElementById('scenario-stage');
       if (scenario.type === 'phone') {
         stage.innerHTML = `
-          <div class="phone-mockup max-w-sm mx-auto border-slate-900 shadow-2xl">
+          <div class="phone-mockup max-w-sm mx-auto border-slate-900 shadow-2xl transition-all duration-300">
             <div class="bg-slate-900 h-6 flex justify-center items-center"><div class="w-16 h-3 bg-slate-800 rounded-full"></div></div>
             <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 font-bold text-slate-700 text-xs flex justify-between items-center">
               <span>📱</span><span>${scenario.header}</span><span>🔋 100%</span>
@@ -712,7 +773,7 @@
           </div>`;
       } else {
         stage.innerHTML = `
-          <div class="browser-mockup max-w-xl mx-auto shadow-2xl">
+          <div class="browser-mockup max-w-xl mx-auto shadow-2xl transition-all duration-300">
             <div class="bg-slate-100 px-3 py-2 border-b border-slate-200 flex items-center space-x-2">
               <div class="flex space-x-1.5">
                 <span class="w-2.5 h-2.5 bg-red-400 rounded-full inline-block"></span>
@@ -736,8 +797,8 @@
 
       if (hasAnswered || state.isRevealed) {
         container.innerHTML = `
-          <div class="col-span-full bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl text-center space-y-2">
-            <span class="text-4xl">🔒</span>
+          <div class="col-span-full bg-slate-50 border-2 border-slate-200 p-6 rounded-2xl text-center space-y-2 card-pop-enter">
+            <span class="text-4xl inline-block transition-transform hover:scale-110">🔒</span>
             <p class="text-2xl font-black text-indigo-600">
               ${hasAnswered ? "Answer Recorded!" : "Time's Up!"}
             </p>
@@ -747,7 +808,7 @@
       }
 
       container.innerHTML = scenario.options.map(opt => `
-        <button onclick="submitParticipantAnswer('${opt.type}')" class="w-full ${opt.color} text-white font-black text-xl py-5 rounded-2xl shadow-md transition active:scale-95 btn-touch">
+        <button onclick="submitParticipantAnswer('${opt.type}')" class="w-full ${opt.color} text-white font-black text-xl py-5 rounded-2xl shadow-md transition btn-touch">
           ${opt.label}
         </button>
       `).join('');
@@ -795,7 +856,7 @@
 
       const expCard = document.getElementById('explanation-card');
       document.getElementById('explanation-badge').innerText = scenario.badge;
-      document.getElementById('explanation-badge').className = `text-lg px-4 py-1.5 rounded-xl font-black text-white ${scenario.badgeBg}`;
+      document.getElementById('explanation-badge').className = `text-lg px-4 py-1.5 rounded-xl font-black text-white ${scenario.badgeBg} shadow transition-all`;
       document.getElementById('explanation-title').innerText = scenario.explanationTitle;
       document.getElementById('explanation-text').innerText = scenario.explanation;
       
@@ -816,7 +877,7 @@
         let rankBadge = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `#${idx + 1}`;
         let streakBadge = p.streak > 1 ? `<span class="bg-amber-100 text-amber-800 border border-amber-300 text-xs px-2 py-0.5 rounded-full font-bold ml-2">🔥 ${p.streak}x streak</span>` : '';
         return `
-          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200 text-base">
+          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200 text-base transition-transform hover:scale-[1.01]">
             <span class="font-bold flex items-center gap-2 text-slate-800">
               <span>${rankBadge}</span>
               <span>${p.name}</span>
@@ -855,7 +916,7 @@
       document.getElementById('final-leaderboard').innerHTML = sorted.map((p, idx) => {
         let medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⭐";
         return `
-          <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200 text-base font-bold shadow-sm">
+          <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200 text-base font-bold shadow-sm transition-transform hover:scale-[1.01]">
             <span class="flex items-center gap-3 text-slate-800"><span class="text-xl">${medal}</span><span>${p.name}</span></span>
             <span class="text-indigo-600 font-mono font-black">${p.score || 0} pts</span>
           </div>`;
